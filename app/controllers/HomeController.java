@@ -20,7 +20,7 @@ public class HomeController extends Controller {
         return ok("hello there!");
     }
     
-    //public Result getName() {
-    	//return ok("Well hello there you naughty boy!");
-    //}
+    public Result helloThere() {
+        return ok("hello there!");
+    }
 }
