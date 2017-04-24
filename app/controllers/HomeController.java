@@ -21,6 +21,6 @@ public class HomeController extends Controller {
     }
     
     public Result helloThere() {
-        return ok("hello there!");
+        return ok("Hello from Heroku and Play!");
     }
 }
