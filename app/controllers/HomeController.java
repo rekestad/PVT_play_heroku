@@ -17,10 +17,10 @@ public class HomeController extends Controller {
      * <code>GET</code> request with a path of <code>/</code>.
      */
     public Result index() {
-        return ok(index.render("Your new application is ready."));
+        return ok("hello there!");
     }
     
-    public Result getName() {
-    	return ok("Well hello there you naughty boy!");
-    }
+    //public Result getName() {
+    	//return ok("Well hello there you naughty boy!");
+    //}
 }
