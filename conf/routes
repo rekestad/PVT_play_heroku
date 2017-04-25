@@ -13,3 +13,5 @@ GET     /message                    controllers.AsyncController.message
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
 GET		/hello				controllers.HomeController.helloThere
+
+GET		/helloworld/:input				controllers.TestClass.helloworld(input: String, id)
