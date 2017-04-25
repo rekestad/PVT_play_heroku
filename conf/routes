@@ -15,3 +15,7 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET		/hello				controllers.HomeController.helloThere
 
 GET		/helloworld/:input				controllers.TestClass.helloworld(input: String, id)
+
+GET		/user/add						controllers.TestClass.addUser(fname:String, lname:String, age:Integer)
+
+GET		/user/list-all					controllers.TestClass.getUsers
