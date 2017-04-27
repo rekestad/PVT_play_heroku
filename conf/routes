@@ -19,3 +19,5 @@ GET		/helloworld/:input				controllers.TestClass.helloworld(input: String, id)
 GET		/user/add						controllers.TestClass.addUser(fname:String, lname:String, age:Integer)
 
 GET		/user/list-all					controllers.TestClass.getUsers
+
+GET		/test-db						controllers.TestDBController.openDatabase
