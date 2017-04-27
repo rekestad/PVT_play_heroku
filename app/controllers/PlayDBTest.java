@@ -21,7 +21,7 @@ public class PlayDBTest extends Controller{
 		this.db = db;
 	}
 
-	public Result test() {
+	public Result listUsrs() {
 		final String[] result = {""};
 
 		// my attempt to avoid all the try/catch statements (that still exist in doSQLStatement())
@@ -30,10 +30,11 @@ public class PlayDBTest extends Controller{
 
 			while(rs.next()){
 				int id  = rs.getInt("User_ID");
+				int age = rs.getInt("age");
 				String fName = rs.getString("Name");
-				String lName = rs.getString("Description");
+				String desc = rs.getString("Description");
 
-				result[0] += "ID: " + id + ", name: " + fName + ", desc: " + lName + "\n";
+				result[0] += "ID: " + id + ", age: " + age + ", name: " + fName + ", desc: " + desc + "\n";
 			}
 
 			rs.close();
@@ -41,6 +42,14 @@ public class PlayDBTest extends Controller{
 		doSQLStatement(sp);
 
 		return ok(result[0]);
+	}
+
+	public Result makeUsr(int id, int age, String name, String desc) {
+		StatementProcessor sp = stmt -> {
+			stmt.executeUpdate("INSERT INTO Users VALUES ("+id+",\""+name+"\","+age+",\""+desc+"\")");
+		};
+		doSQLStatement(sp);
+		return listUsrs();
 	}
 
 	public void doSQLStatement(StatementProcessor sp) {

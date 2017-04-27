@@ -20,4 +20,6 @@ GET		/user/add						controllers.TestClass.addUser(fname:String, lname:String, ag
 
 GET		/user/list-all					controllers.TestClass.getUsers
 
-GET		/test-db						controllers.PlayDBTest.test
+GET		/test-db						controllers.PlayDBTest.listUsrs
+
+GET		/test-db/make					controllers.PlayDBTest.makeUsr(id:Integer , age:Integer, name:String, desc:String)
