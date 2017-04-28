@@ -27,8 +27,15 @@ GET		/test-db/make					controllers.PlayDBTest.makeUsr(age:Integer, name:String, 
 GET		/importSthlmData				controllers.SthlmDataController.importAll
 GET		/updateSthlmData				controllers.SthlmDataController.updateAll
 
-GET     /location/add                   controllers.LocationClass.addLocation(name:String, loc_type:Integer, x:Double, y:Double)
-GET     /location/list-all              controllers.LocationClass.getLocations
+GET     /location/add                   controllers.LocationController.addLocation(name:String, loc_type:Integer, x:Double, y:Double)
+GET     /location/list-all              controllers.LocationController.getLocations
 GET     /location-db                    controllers.PlayDBLocation.listLocations
-#GET     /location-db/make               controllers.PlayDBLocation.makeLocation(name:String, loc_type:Integer, x:Double, y:Double)
+#GET    /location-db/make               controllers.PlayDBLocation.makeLocation(name:String, loc_type:Integer, x:Double, y:Double)
 
+POST 	/event/create					controllers.EventController.createEvent(locationId:int, date:String, time:String, desc:String)
+#POST 	/event/update					controllers.EventController.updateEvent()
+#GET	/event/delete					controllers.EventController.deleteEvent(id:int)
+#GET	/event/select					controllers.EventController.selectEvent(id:int)
+#GET	/event/selectAll				controllers.EventController.selectEvent(id:int)
+#GET	/event/selectFavourites			controllers.EventController.selectEvent(id:int)
+#GET	/event/selectFavourites			controllers.EventController.selectEvent(id:int)
