@@ -2,6 +2,7 @@ package controllers;
 
 import javax.inject.Inject;
 
+import controllers.tools.SQLTools;
 import play.db.Database;
 import play.mvc.*;
 
@@ -44,25 +45,16 @@ public class PlayDBTest extends Controller {
 	}
 
 	public Result makeUsr(int age, String name, String desc) {
-		Connection conn = db.getConnection();
-		try {
-			conn.setAutoCommit(false);
-			PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Users (Name, Age, Description) VALUES (?,?,?)");
+		SQLTools.StatementFiller sf = pstmt -> {
 			pstmt.setString(1, name);
 			pstmt.setString(3, desc);
 			pstmt.setInt(2, age);
-			pstmt.execute();
-			conn.commit();
-			pstmt.close();
+		};
+
+		try {
+			SQLTools.doPreparedStatement(db, "INSERT INTO Users (Name, Age, Description) VALUES (?,?,?)", sf);
 		} catch (SQLException e) {
-			e.printStackTrace();
-			return ok("couldn't create user");
-		} finally {
-			try {
-				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			return ok("couldn't make user");
 		}
 
 		return ok("made user?");
