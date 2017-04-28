@@ -30,7 +30,7 @@ public class EventController extends Controller {
 		if (executeQuery(sql, sf))
 			return created("Event created.");
 		else
-			return internalServerError("Error while creating event.");
+			return ok("Error while creating event.");
 	}
 
 	public Result updateEvent(int eventId, int locationId, String date, String time, String desc) {
