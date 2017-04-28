@@ -26,22 +26,24 @@ public class PlayDBTest extends Controller {
 	public Result listUsrs() {
 		final String[] result = {""};
 
-//		// my attempt to avoid all the try/catch statements (that still exist in doSQLStatement())
-//		StatementProcessor sp = stmt -> {
-//			ResultSet rs = stmt.executeQuery("SELECT * FROM Users");
-//
-//			while(rs.next()){
-//				int id  = rs.getInt("User_ID");
-//				int age = rs.getInt("age");
-//				String fName = rs.getString("Name");
-//				String desc = rs.getString("Description");
-//
-//				result[0] += "ID: " + id + ", age: " + age + ", name: " + fName + ", desc: " + desc + "\n";
-//			}
-//
-//			rs.close();
-//		};
-//		doSQLStatement(sp);
+		// my attempt to avoid all the try/catch statements (that still exist in doSQLStatement())
+		SQLTools.StatementFiller sf = stmt -> {};
+		SQLTools.ResultSetProcesser rp = rs -> {
+			while(rs.next()){
+				int id  = rs.getInt("User_ID");
+				int age = rs.getInt("age");
+				String fName = rs.getString("Name");
+				String desc = rs.getString("Description");
+
+				result[0] += "ID: " + id + ", age: " + age + ", name: " + fName + ", desc: " + desc + "\n";
+			}
+		};
+
+		try {
+			SQLTools.doPreparedStatement(db, "SELECT * FROM Users", sf, rp);
+		} catch (SQLException e) {
+			return ok("couldn't list users");
+		}
 
 		return ok(result[0]);
 	}
@@ -53,8 +55,12 @@ public class PlayDBTest extends Controller {
 			pstmt.setInt(2, age);
 		};
 
+		SQLTools.ResultSetProcesser rp = rs -> {
+
+		};
+
 		try {
-			SQLTools.doPreparedStatement(db, "INSERT INTO Users (Name, Age, Description) VALUES (?,?,?)", sf);
+			SQLTools.doPreparedStatement(db, "INSERT INTO Users (Name, Age, Description) VALUES (?,?,?)", sf, rp);
 		} catch (SQLException e) {
 			return ok("couldn't make user");
 		}
