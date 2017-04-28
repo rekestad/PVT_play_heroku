@@ -22,5 +22,13 @@ GET		/user/list-all					controllers.TestClass.getUsers
 
 GET		/test-db						controllers.PlayDBTest.listUsrs
 
+
+GET     /location/add                   controllers.LocationClass.addLocation(name:String, loc_type:Integer, x:Double, y:Double)
+
+GET     /location/list-all              controllers.LocationClass.getLocations
+
+GET     /location-db                    controllers.PlayDBLocation.listLocations
+
+GET     /location-db/make               controllers.PlayDBLocation.makeLocation(name:String, loc_type:Integer, x:Double, y:Double)
 GET		/importSthlm					controllers.ImportSthlmData.getParks
 GET		/test-db/make					controllers.PlayDBTest.makeUsr(age:Integer, name:String, desc:String)
