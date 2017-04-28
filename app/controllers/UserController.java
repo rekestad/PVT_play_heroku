@@ -30,7 +30,7 @@ public class UserController extends Controller {
 				String fName = rs.getString("first_name");
 				String lName = rs.getString("last_name");
 
-				result[0] += "{ user_id: " + id + ", first_name: " + fName + ", last_name: "+ lName + "} \n";
+				result[0] += "{ user_id: " + id + ", first_name: " + fName + ", last_name: "+ lName + "}, \n";
 			}
 			result[0] += "]";
 		};
@@ -44,9 +44,9 @@ public class UserController extends Controller {
 		return ok(result[0]);
 	}
 
-	public Result addUsr(int id, String fname, String lname) {
+	public Result addUsr(long id, String fname, String lname) {
 		SQLTools.StatementFiller sf = pstmt -> {
-			pstmt.setInt(1, id);
+			pstmt.setLong(1, id);
 			pstmt.setString(3, fname);
 			pstmt.setString(2, lname);
 		};

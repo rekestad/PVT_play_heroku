@@ -16,7 +16,7 @@ GET		/hello				controllers.HomeController.helloThere
 
 GET		/helloworld/:input				controllers.TestClass.helloworld(input: String, id)
 
-GET		/user/add						controllers.UserController.addUsr(id:Integer, fname:String, lname:String)
+GET		/user/add						controllers.UserController.addUsr(id:Long, fname:String, lname:String)
 
 GET		/user/list-all					controllers.UserController.listUsrs
 
