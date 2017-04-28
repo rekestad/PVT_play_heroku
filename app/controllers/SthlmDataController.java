@@ -20,68 +20,59 @@ import controllers.tools.SQLTools;
 
 public class SthlmDataController extends Controller {
 	private Database db;
+	private static String urlParks = "http://api.stockholm.se/ServiceGuideService/ServiceUnitTypes/9da341e4-bdc6-4b51-9563-e65ddc2f7434/ServiceUnits?apikey=56010af30b114502bfbf8db404ef41a4";
+	private static String urlPools = "http://api.stockholm.se/ServiceGuideService/ServiceUnitTypes/dce7cb97-b393-465b-a44c-0583f77a7cc6/ServiceUnits?apikey=56010af30b114502bfbf8db404ef41a4";
+	private static String urlSchools = "http://api.stockholm.se/ServiceGuideService/ServiceUnitTypes/4edcc8c3-8eb8-424d-ae2a-447ba9f349bb/ServiceUnits?apikey=56010af30b114502bfbf8db404ef41a4";
 
 	@Inject
 	public SthlmDataController(Database db) {
 		this.db = db;
 	}
+	
+	public Result importAll() {
+		processSthlmData(urlParks, 1, "insert");
+		processSthlmData(urlPools, 2, "insert");
+		processSthlmData(urlSchools, 3, "insert");
+		return ok("Imported Sthlm data successfully");
+	}
+	
+	public Result updateAll() {
+		processSthlmData(urlParks, 1, "update");
+		processSthlmData(urlPools, 2, "update");
+		processSthlmData(urlSchools, 3, "update");
+		return ok("Updated Sthlm data successfully");
+	}
 
-	public Result importParks() {
-
-		HttpURLConnection conn = startConnection(
-				"http://api.stockholm.se/ServiceGuideService/ServiceUnitTypes/9da341e4-bdc6-4b51-9563-e65ddc2f7434/ServiceUnits?apikey=56010af30b114502bfbf8db404ef41a4");
+	private void processSthlmData(String url, int locationType, String sqlOperation) {
+		HttpURLConnection conn = startConnection(url);
 		NodeList nList = getXMLNodeList(conn, "ServiceUnit");
-
-		String[] values = new String[6];
-		values[3] = "1"; // location_type = park
 
 		for (int i = 0; i < nList.getLength(); i++) {
 
 			Node nNode = nList.item(i);
 
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
 				Element elementMain = (Element) nNode;
 				Element elementGeoPos = (Element) elementMain.getElementsByTagName("GeographicalPosition").item(0);
-				values[0] = elementMain.getAttribute("id");
-				values[1] = elementMain.getAttribute("name");
-				values[2] = getShortName(elementMain.getAttribute("name"));
-				values[4] = elementGeoPos.getAttribute("x");
-				values[5] = elementGeoPos.getAttribute("y");
-
+				
+				if (sqlOperation == "insert")
+					executeInsert(elementMain, elementGeoPos, locationType);
+				else
+					executeUpdate(elementMain, elementGeoPos);
 			}
-
-			if (!executeQuery(values))
-				return badRequest("Import of parks failed.");
 		}
-
 		conn.disconnect();
-		return ok("Imported parks successfully.");
 	}
 
-	public Result importPools() {
-		// code for pools goes here
-		return ok();
-	}
+	private void executeInsert(Element elementMain, Element elementGeoPos, int lType) {
 
-	public Result importSchools() {
-		// code for schools goes here
-		return ok();
-	}
-	
-	public Result importAll() {
-		// code for schools goes here
-		return ok();
-	}
-
-	private boolean executeQuery(String[] values) {
 		SQLTools.StatementFiller sf = pstmt -> {
-			pstmt.setString(1, values[0]);
-			pstmt.setString(2, values[1]);
-			pstmt.setString(3, values[2]);
-			pstmt.setString(4, values[3]);
-			pstmt.setString(5, values[4]);
-			pstmt.setString(6, values[5]);
+			pstmt.setString(1, elementMain.getAttribute("id"));
+			pstmt.setString(2, elementMain.getAttribute("name"));
+			pstmt.setString(3, getShortName(elementMain.getAttribute("name")));
+			pstmt.setInt(4, lType);
+			pstmt.setString(5, elementGeoPos.getAttribute("x"));
+			pstmt.setString(6, elementGeoPos.getAttribute("y"));
 		};
 
 		SQLTools.ResultSetProcesser rp = rs -> {
@@ -90,10 +81,31 @@ public class SthlmDataController extends Controller {
 		try {
 			SQLTools.doPreparedStatement(db, "INSERT INTO Locations VALUES (NULL,?,?,?,?,?,?)", sf, rp);
 		} catch (SQLException e) {
-			return false;
+			e.printStackTrace();
 		}
 
-		return true;
+	}
+
+	private void executeUpdate(Element elementMain, Element elementGeoPos) {
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setString(1, elementMain.getAttribute("name"));
+			pstmt.setString(2, getShortName(elementMain.getAttribute("name")));
+			pstmt.setString(3, elementGeoPos.getAttribute("x"));
+			pstmt.setString(4, elementGeoPos.getAttribute("y"));
+			pstmt.setString(5, elementMain.getAttribute("id"));
+		};
+
+		SQLTools.ResultSetProcesser rp = rs -> {
+		};
+
+		try {
+			SQLTools.doPreparedStatement(db,
+					"UPDATE Locations SET name = ?, name_short = ?, position_x = ?, position_y = ? WHERE sthlm_id = ?",
+					sf, rp);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private HttpURLConnection startConnection(String theURL) {
