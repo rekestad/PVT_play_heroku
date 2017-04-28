@@ -24,4 +24,4 @@ GET		/test-db						controllers.PlayDBTest.listUsrs
 
 GET		/test-db/make					controllers.PlayDBTest.makeUsr(id:Integer , age:Integer, name:String, desc:String)
 
-GET		/importSthlm					controllers.ImportSthlmData.getParks
+GET		/importSthlm/parks				controllers.ImportSthlmData.importParks
