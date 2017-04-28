@@ -30,13 +30,13 @@ public class PlayDBLocation extends Controller {
             ResultSet rs = stmt.executeQuery("SELECT * FROM Locations");
 
             while(rs.next()){
-                int id  = rs.getInt("location_id");
+                //int id  = rs.getInt("location_id");
                 String name = rs.getString("name");
                 int loc_type = rs.getInt("location_type");
                 double x = rs.getDouble("position_x");
                 double y = rs.getDouble("position_y");
 
-                result[0] += "location_id: " + id + ", name: " + name + ", location_type: " + loc_type + ", position_x: " + x + ", location_y: " + y + "\n";
+                result[0] += "name: " + name + ", location_type: " + loc_type + ", position_x: " + x + ", location_y: " + y + "\n";
             }
 
             rs.close();
@@ -46,9 +46,9 @@ public class PlayDBLocation extends Controller {
         return ok(result[0]);
     }
 
-    public Result makeLocation(int id, String name, int loc_type, double x, double y) {
+    public Result makeLocation(String name, int loc_type, double x, double y) {
         StatementProcessor sp = stmt -> {
-            stmt.executeUpdate("INSERT INTO Locations VALUES ("+id+",\""+name+"\","+loc_type+","+x+", "+y+")");
+            stmt.executeUpdate("INSERT INTO Locations VALUES (\""+name+"\","+loc_type+","+x+", "+y+")");
         };
         doSQLStatement(sp);
         return listLocations();
