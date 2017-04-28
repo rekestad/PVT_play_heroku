@@ -32,7 +32,7 @@ GET     /location/list-all              controllers.LocationClass.getLocations
 GET     /location-db                    controllers.PlayDBLocation.listLocations
 #GET    /location-db/make               controllers.PlayDBLocation.makeLocation(name:String, loc_type:Integer, x:Double, y:Double)
 
-POST 	/event/create					controllers.EventController.createEvent(locationId:int, date:String, time:String, desc:String)
+POST 	/event/create					controllers.EventController.createEvent(locationId:Integer, date:String, time:String, desc:String)
 #POST 	/event/update					controllers.EventController.updateEvent()
 #GET	/event/delete					controllers.EventController.deleteEvent(id:int)
 #GET	/event/select					controllers.EventController.selectEvent(id:int)
