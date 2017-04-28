@@ -22,6 +22,5 @@ GET		/user/list-all					controllers.TestClass.getUsers
 
 GET		/test-db						controllers.PlayDBTest.listUsrs
 
-GET		/test-db/make					controllers.PlayDBTest.makeUsr(id:Integer , age:Integer, name:String, desc:String)
-
 GET		/importSthlm					controllers.ImportSthlmData.getParks
+GET		/test-db/make					controllers.PlayDBTest.makeUsr(age:Integer, name:String, desc:String)
