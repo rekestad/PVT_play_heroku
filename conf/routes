@@ -24,13 +24,18 @@ GET		/test-db						controllers.PlayDBTest.listUsrs
 
 GET		/test-db/make					controllers.PlayDBTest.makeUsr(age:Integer, name:String, desc:String)
 
-GET		/importSthlm/parks				controllers.ImportSthlmData.importParks
+GET		/import/parks					controllers.SthlmDataController.importParks
+GET		/import/pools					controllers.SthlmDataController.importPools
+GET		/import/schools					controllers.SthlmDataController.importSchools
+GET		/import/all						controllers.SthlmDataController.importAll
+
+#GET	/update/parks					controllers.SthlmDataController.updateParks
+#GET	/update/pools					controllers.SthlmDataController.updatePools
+#GET	/update/schools					controllers.SthlmDataController.updateSchools
+#GET	/update/all						controllers.SthlmDataController.updateAll
 
 GET     /location/add                   controllers.LocationClass.addLocation(name:String, loc_type:Integer, x:Double, y:Double)
-
 GET     /location/list-all              controllers.LocationClass.getLocations
-
 GET     /location-db                    controllers.PlayDBLocation.listLocations
-
 #GET     /location-db/make               controllers.PlayDBLocation.makeLocation(name:String, loc_type:Integer, x:Double, y:Double)
 

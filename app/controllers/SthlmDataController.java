@@ -1,5 +1,6 @@
 package controllers;
 
+import play.db.Database;
 import play.mvc.*;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -8,6 +9,7 @@ import java.net.URL;
 import java.sql.SQLException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -16,8 +18,13 @@ import org.w3c.dom.Element;
 
 import controllers.tools.SQLTools;
 
-public class ImportSthlmData extends Controller {
-	private DatabaseController db;
+public class SthlmDataController extends Controller {
+	private Database db;
+
+	@Inject
+	public SthlmDataController(Database db) {
+		this.db = db;
+	}
 
 	public Result importParks() {
 
@@ -25,7 +32,7 @@ public class ImportSthlmData extends Controller {
 				"http://api.stockholm.se/ServiceGuideService/ServiceUnitTypes/9da341e4-bdc6-4b51-9563-e65ddc2f7434/ServiceUnits?apikey=56010af30b114502bfbf8db404ef41a4");
 		NodeList nList = getXMLNodeList(conn, "ServiceUnit");
 
-		String[] values = new String[5];
+		String[] values = new String[6];
 		values[3] = "1"; // location_type = park
 
 		for (int i = 0; i < nList.getLength(); i++) {
@@ -36,8 +43,9 @@ public class ImportSthlmData extends Controller {
 
 				Element elementMain = (Element) nNode;
 				Element elementGeoPos = (Element) elementMain.getElementsByTagName("GeographicalPosition").item(0);
-				values[1] = elementMain.getAttribute("id");
-				values[2] = elementMain.getAttribute("name");
+				values[0] = elementMain.getAttribute("id");
+				values[1] = elementMain.getAttribute("name");
+				values[2] = getShortName(elementMain.getAttribute("name"));
 				values[4] = elementGeoPos.getAttribute("x");
 				values[5] = elementGeoPos.getAttribute("y");
 
@@ -62,20 +70,20 @@ public class ImportSthlmData extends Controller {
 	}
 
 	private boolean executeQuery(String[] values) {
-
 		SQLTools.StatementFiller sf = pstmt -> {
 			pstmt.setString(1, values[0]);
 			pstmt.setString(2, values[1]);
 			pstmt.setString(3, values[2]);
 			pstmt.setString(4, values[3]);
 			pstmt.setString(5, values[4]);
+			pstmt.setString(6, values[5]);
 		};
 
 		SQLTools.ResultSetProcesser rp = rs -> {
 		};
 
 		try {
-			SQLTools.doPreparedStatement(db.getDb(), "INSERT INTO Locations VALUES (NULL,?,?,?,?,?)", sf, rp);
+			SQLTools.doPreparedStatement(db, "INSERT INTO Locations VALUES (NULL,?,?,?,?,?,?)", sf, rp);
 		} catch (SQLException e) {
 			return false;
 		}
@@ -122,5 +130,12 @@ public class ImportSthlmData extends Controller {
 
 		return doc.getElementsByTagName(tagName);
 
+	}
+
+	private String getShortName(String str) {
+		if (str.contains(","))
+			return str.substring(0, str.indexOf(","));
+		else
+			return str;
 	}
 }
