@@ -5,10 +5,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.inject.Inject;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * Created by Cecilia on 2017-04-28.
@@ -30,13 +27,13 @@ public class PlayDBLocation extends Controller {
             ResultSet rs = stmt.executeQuery("SELECT * FROM Locations");
 
             while(rs.next()){
-                int id  = rs.getInt("location_id");
+                //int id  = rs.getInt("location_id");
                 String name = rs.getString("name");
                 int loc_type = rs.getInt("location_type");
                 double x = rs.getDouble("position_x");
                 double y = rs.getDouble("position_y");
 
-                result[0] += "location_id: " + id + ", name: " + name + ", location_type: " + loc_type + ", position_x: " + x + ", location_y: " + y + "\n";
+                result[0] += "name: " + name + ", location_type: " + loc_type + ", position_x: " + x + ", location_y: " + y + "\n";
             }
 
             rs.close();
@@ -46,13 +43,31 @@ public class PlayDBLocation extends Controller {
         return ok(result[0]);
     }
 
-    public Result makeLocation(int id, String name, int loc_type, double x, double y) {
-        StatementProcessor sp = stmt -> {
-            stmt.executeUpdate("INSERT INTO Locations VALUES ("+id+",\""+name+"\","+loc_type+","+x+", "+y+")");
-        };
-        doSQLStatement(sp);
-        return listLocations();
-    }
+    /*public Result makeLocation(String name, int location_type, double position_x, double position_y) {
+        Connection conn = db.getConnection();
+        try {
+            conn.setAutoCommit(false);
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Locations (name, location_type, position_x, position_y) VALUES (?,?,?,?)");
+            pstmt.setString(1, name);
+            pstmt.setInt(2, location_type);
+            pstmt.setDouble(3, position_x);
+            pstmt.setDouble(4, position_y);
+            pstmt.execute();
+            conn.commit();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return ok("couldn't create user");
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return ok("made user?");
+    }*/
 
     public void doSQLStatement(StatementProcessor sp) {
         Connection conn = db.getConnection();

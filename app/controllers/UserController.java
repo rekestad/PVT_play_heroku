@@ -12,28 +12,27 @@ import java.sql.SQLException;
 /**
  * Created by felix on 2017-04-27.
  */
-public class PlayDBTest extends Controller {
+public class UserController extends Controller {
 	private Database db;
 
 	@Inject
-	public PlayDBTest(Database db) {
+	public UserController(Database db) {
 		this.db = db;
 	}
 
 	public Result listUsrs() {
-		final String[] result = {""};
+		final String[] result = {"["};
 
-		// my attempt to avoid all the try/catch statements (that still exist in doSQLStatement())
 		SQLTools.StatementFiller sf = stmt -> {};
 		SQLTools.ResultSetProcesser rp = rs -> {
 			while(rs.next()){
-				int id  = rs.getInt("User_ID");
-				int age = rs.getInt("age");
-				String fName = rs.getString("Name");
-				String desc = rs.getString("Description");
+				int id  = rs.getInt("user_id");
+				String fName = rs.getString("first_name");
+				String lName = rs.getString("last_name");
 
-				result[0] += "ID: " + id + ", age: " + age + ", name: " + fName + ", desc: " + desc + "\n";
+				result[0] += "{ user_id: " + id + ", first_name: " + fName + ", last_name: "+ lName + "} \n";
 			}
+			result[0] += "]";
 		};
 
 		try {
@@ -45,19 +44,18 @@ public class PlayDBTest extends Controller {
 		return ok(result[0]);
 	}
 
-	public Result makeUsr(int age, String name, String desc) {
+	public Result addUsr(int id, String fname, String lname) {
 		SQLTools.StatementFiller sf = pstmt -> {
-			pstmt.setString(1, name);
-			pstmt.setString(3, desc);
-			pstmt.setInt(2, age);
+			pstmt.setInt(1, id);
+			pstmt.setString(3, fname);
+			pstmt.setString(2, lname);
 		};
 
 		SQLTools.ResultSetProcesser rp = rs -> {
-
 		};
 
 		try {
-			SQLTools.doPreparedStatement(db, "INSERT INTO Users (Name, Age, Description) VALUES (?,?,?)", sf, rp);
+			SQLTools.doPreparedStatement(db, "INSERT INTO Users (user_id, first_name, last_name) VALUES (?,?,?)", sf, rp);
 		} catch (SQLException e) {
 			return ok("couldn't make user");
 		}
@@ -65,3 +63,4 @@ public class PlayDBTest extends Controller {
 		return ok("made user?");
 	}
 }
+

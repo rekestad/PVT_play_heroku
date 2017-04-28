@@ -16,12 +16,21 @@ GET		/hello				controllers.HomeController.helloThere
 
 GET		/helloworld/:input				controllers.TestClass.helloworld(input: String, id)
 
-GET		/user/add						controllers.TestClass.addUser(fname:String, lname:String, age:Integer)
+GET		/user/add						controllers.UserController.addUsr(id:Integer, fname:String, lname:String)
 
-GET		/user/list-all					controllers.TestClass.getUsers
+GET		/user/list-all					controllers.UserController.listUsrs
 
 GET		/test-db						controllers.PlayDBTest.listUsrs
 
-GET		/test-db/make					controllers.PlayDBTest.makeUsr(id:Integer , age:Integer, name:String, desc:String)
+GET		/test-db/make					controllers.PlayDBTest.makeUsr(age:Integer, name:String, desc:String)
 
 GET		/importSthlm/parks				controllers.ImportSthlmData.importParks
+
+GET     /location/add                   controllers.LocationClass.addLocation(name:String, loc_type:Integer, x:Double, y:Double)
+
+GET     /location/list-all              controllers.LocationClass.getLocations
+
+GET     /location-db                    controllers.PlayDBLocation.listLocations
+
+#GET     /location-db/make               controllers.PlayDBLocation.makeLocation(name:String, loc_type:Integer, x:Double, y:Double)
+
