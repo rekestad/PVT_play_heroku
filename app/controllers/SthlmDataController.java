@@ -68,6 +68,11 @@ public class SthlmDataController extends Controller {
 		// code for schools goes here
 		return ok();
 	}
+	
+	public Result importAll() {
+		// code for schools goes here
+		return ok();
+	}
 
 	private boolean executeQuery(String[] values) {
 		SQLTools.StatementFiller sf = pstmt -> {
