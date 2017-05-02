@@ -15,8 +15,8 @@ import java.util.ArrayList;
 public class LocationClass extends Controller {
     ArrayList<Location> locations = new ArrayList<>();
 
-    public Result addLocation(String name, int loc_type, double x, double y) {
-        locations.add(new Location(name, loc_type, x, y));
+    public Result addLocation(String sthlm_id, String name, String short_name, int loc_type, double x, double y) {
+        locations.add(new Location(sthlm_id, name, short_name, loc_type, x, y));
         return ok();
     }
 
@@ -27,11 +27,13 @@ public class LocationClass extends Controller {
 
     private class Location {
         private int loc_type;
-        private String name;
+        private String sthlm_id, name, name_short;
         private double x, y;
 
-        Location(String name, int loc_type, double x, double y) {
+        Location(String sthlm_id, String name, String name_short, int loc_type, double x, double y) {
+            this.sthlm_id = sthlm_id;
             this.name = name;
+            this.name_short = name_short;
             this.loc_type = loc_type;
             this.x = x;
             this.y = y;
