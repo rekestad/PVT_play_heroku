@@ -42,8 +42,10 @@ public class LocationController extends Controller {
         return ok(result[0]);
     }
 
-    public Result addLocation(String sthlm_id, String name, String name_short, int location_type, double x, double y){
+    //Denna behövs väl inte eftersom parker hämtas genom sthlmdatacontroller?
+    /*public Result addLocation(int id, String sthlm_id, String name, String name_short, int location_type, double x, double y){
         SQLTools.StatementFiller sf = pstmt -> {
+            pstmt.setInt(1, id);
             pstmt.setString(2, sthlm_id);
             pstmt.setString(3, name);
             pstmt.setString(4, name_short);
@@ -62,7 +64,7 @@ public class LocationController extends Controller {
         }
 
         return ok("made location");
-    }
+    }*/
 
 }
 
