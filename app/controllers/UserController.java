@@ -55,7 +55,7 @@ public class UserController extends Controller {
 		};
 
 		try {
-			SQLTools.doPreparedStatement(db, "INSERT INTO Users (user_id, first_name, last_name) VALUES (?,?,?)", sf, rp);
+			SQLTools.doPreparedStatement(db, "INSERT INTO Users (facebook_id, first_name, last_name) VALUES (?,?,?)", sf, rp);
 		} catch (SQLException e) {
 			return ok("couldn't make user");
 		}
