@@ -3,16 +3,23 @@ package controllers;
 import java.sql.SQLException;
 import javax.inject.Inject;
 import controllers.tools.SQLTools;
+import play.data.DynamicForm;
+import play.data.Form;
+import play.data.FormFactory;
 import play.db.Database;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+
 public class EventController extends Controller {
 	private Database db;
 	private String exceptionMessage;
+	
+	@Inject
+    FormFactory fc;
 
 	@Inject
-	public EventController(Database db) {
+	public EventController(Database db, FormFactory fc) {
 		this.db = db;
 		exceptionMessage = "";
 	}
@@ -88,6 +95,18 @@ public class EventController extends Controller {
 	}
 	
 	public Result postTest() {
-		return ok("Post test success!");
+		DynamicForm requestData = fc.form().bindFromRequest();
+		
+		
+//        System.out.println("form: " + );
+		
+//	    if (form.data().size() == 0) {
+//	        return badRequest("Expceting some data");
+//	    } else {
+//	        String response = "Client " + form.get("nome_cliente") + "has phone number " + form.get("telefone_cliente");
+//	        return ok(response);
+//	    }
+		
+	    return ok("Received: " + requestData.get("testpara"));
 	}
 }
