@@ -32,7 +32,7 @@ public class EventController extends Controller {
 		else
 			return badRequest("Error: " + exceptionMessage);
 	}
-
+	
 	// public Result updateEvent(int eventId, int locationId, String date,
 	// String time, String description) {
 	public Result updateEvent(String eventId, String locationId, String date, String time, String description) {
@@ -85,5 +85,9 @@ public class EventController extends Controller {
 		}
 
 		return true;
+	}
+	
+	public Result postTest() {
+		return ok("Post test success!");
 	}
 }
