@@ -33,10 +33,10 @@ public class EventController extends Controller {
 			pstmt.setString(3, requestData.get("description"));
 		};
 
-		if (executeQuery(sql, sf, null))
-			return ok("Event created.");
-		else
-			return badRequest("Error: " + exceptionMessage);
+		//if (executeQuery(sql, sf, null))
+			return ok("Event created." + sf);
+		//else
+			//return badRequest("Error: " + exceptionMessage);
 	}
 	
 	// public Result updateEvent(int eventId, int locationId, String date,
