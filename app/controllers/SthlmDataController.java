@@ -30,10 +30,11 @@ public class SthlmDataController extends Controller {
 	}
 	
 	public Result importAll() {
-		processSthlmData(urlParks, 1, "insert");
-		processSthlmData(urlPools, 2, "insert");
-		processSthlmData(urlSchools, 3, "insert");
-		return ok("Imported Sthlm data successfully");
+//		processSthlmData(urlParks, 1, "insert");
+//		processSthlmData(urlPools, 2, "insert");
+//		processSthlmData(urlSchools, 3, "insert");
+//		return ok("Imported Sthlm data successfully");
+		return ok("Import already made.");
 	}
 	
 	public Result updateAll() {
