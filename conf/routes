@@ -29,6 +29,7 @@ GET		/updateSthlmData				controllers.SthlmDataController.updateAll
 
 #GET     /location/add                   controllers.LocationClass.addLocation(sthlm_id:String, name:String, name_short:String, loc_type:Integer, x:Double, y:Double)
 GET     /location/list-all              controllers.LocationController.listLocations
+GET     /location/search                controllers.LocationController.searchLocations(search:String)
 #GET    /location-db/make               controllers.LocationController.makeLocation(name:String, loc_type:Integer, x:Double, y:Double)
 
 POST 	/event/create					controllers.EventController.createEvent(locationId:Integer, date:String, time:String, desc:String)

@@ -42,29 +42,29 @@ public class LocationController extends Controller {
         return ok(result[0]);
     }
 
-    //Denna behövs väl inte eftersom parker hämtas genom sthlmdatacontroller?
-    /*public Result addLocation(int id, String sthlm_id, String name, String name_short, int location_type, double x, double y){
-        SQLTools.StatementFiller sf = pstmt -> {
-            pstmt.setInt(1, id);
-            pstmt.setString(2, sthlm_id);
-            pstmt.setString(3, name);
-            pstmt.setString(4, name_short);
-            pstmt.setInt(5, location_type);
-            pstmt.setDouble(6, x);
-            pstmt.setDouble(7, y);
-        };
+    public Result searchLocations(String search){
+        final String[] result = {"["};
 
+        SQLTools.StatementFiller sf = stmt -> {
+            stmt.setString(1, search);
+        };
         SQLTools.ResultSetProcesser rp = rs -> {
+            while (rs.next()){
+                String name = rs.getString("name");
+
+                result[0] += "{ name: "+name+"  }, \n";
+            }
+            result[0] += "]";
         };
 
         try{
-            SQLTools.doPreparedStatement(db, "INSERT INTO Locations (sthlm_id, name, name_short, location_type, position_x, position_y) VALUES (?,?,?,?,?,?)", sf, rp);
-        } catch (SQLException e){
-            return ok("couldn't make location");
+            SQLTools.doPreparedStatement(db, "SELECT name FROM Locations WHERE name REGEXP ?", sf, rp);
+        }catch(SQLException e){
+            return ok("couldn't load search");
         }
 
-        return ok("made location");
-    }*/
+        return ok(result[0]);
+    }
 
 }
 
