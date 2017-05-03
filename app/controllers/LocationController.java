@@ -49,12 +49,12 @@ public class LocationController extends Controller {
             stmt.setString(1, search);
         };
         SQLTools.ResultSetProcesser rp = rs -> {
-            while (rs.next()){
+            while (rs.next() && !rs.isLast()){
                 String name = rs.getString("name");
-
                 result[0] += "{ \"name\":\""+name+"\"  }, \n";
             }
-            result[0] += "]";
+            String name = rs.getString("name");
+            result[0] += "{ \"name\":\""+name+"\"  } ]";
         };
 
         try{
