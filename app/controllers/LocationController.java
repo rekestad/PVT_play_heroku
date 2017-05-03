@@ -52,7 +52,7 @@ public class LocationController extends Controller {
             while (rs.next()){
                 String name = rs.getString("name");
 
-                result[0] += "{ name: \""+name+"\"  }, \n";
+                result[0] += "{ \"name\":\""+name+"\"  }, \n";
             }
             result[0] += "]";
         };
