@@ -27,7 +27,7 @@ public class EventController extends Controller {
 			pstmt.setString(3, description);
 		};
 
-		if (executeQuery(sql, sf))
+		if (executeQuery(sql, sf, null))
 			return ok("Event created.");
 		else
 			return badRequest("Error: " + exceptionMessage);
@@ -45,7 +45,7 @@ public class EventController extends Controller {
 			pstmt.setString(4, eventId);
 		};
 
-		if (executeQuery(sql, sf))
+		if (executeQuery(sql, sf, null))
 			return ok("Event updated.");
 		else
 			return badRequest("Error: " + exceptionMessage);
