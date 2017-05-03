@@ -31,8 +31,11 @@ GET		/updateSthlmData				controllers.SthlmDataController.updateAll
 GET     /location/list-all              controllers.LocationController.listLocations
 #GET    /location-db/make               controllers.LocationController.makeLocation(name:String, loc_type:Integer, x:Double, y:Double)
 
-POST 	/event/create					controllers.EventController.createEvent(locationId:Integer, date:String, time:String, desc:String)
-#POST 	/event/update					controllers.EventController.updateEvent()
+# Create-anrop: http://localhost:9000/event/create?locationId=2&date=2017-02-03&time=19.00&description=Ringar%20p%C3%A5%20vattnet
+GET 	/event/create					controllers.EventController.createEvent(locationId:String, date:String, time:String, description:String)
+
+# Update-anrop: http://localhost:9000/event/update?eventId=1&locationId=44&date=2017-06-03&time=15.00&description=Yo%20biatch!
+GET 	/event/update					controllers.EventController.updateEvent(eventId:String, locationId:String, date:String, time:String, description:String)
 #GET	/event/delete					controllers.EventController.deleteEvent(id:int)
 #GET	/event/select					controllers.EventController.selectEvent(id:int)
 #GET	/event/selectAll				controllers.EventController.selectEvent(id:int)
