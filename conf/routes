@@ -27,19 +27,15 @@ GET		/test-db/make					controllers.PlayDBTest.makeUsr(age:Integer, name:String, 
 GET		/importSthlmData				controllers.SthlmDataController.importAll
 GET		/updateSthlmData				controllers.SthlmDataController.updateAll
 
-#GET     /location/add                   controllers.LocationClass.addLocation(sthlm_id:String, name:String, name_short:String, loc_type:Integer, x:Double, y:Double)
+#GET    /location/add                   controllers.LocationClass.addLocation(sthlm_id:String, name:String, name_short:String, loc_type:Integer, x:Double, y:Double)
 GET     /location/list-all              controllers.LocationController.listLocations
 GET     /location/search                controllers.LocationController.searchLocations(search:String)
 #GET    /location-db/make               controllers.LocationController.makeLocation(name:String, loc_type:Integer, x:Double, y:Double)
 
-# Create-anrop: http://localhost:9000/event/create?locationId=2&date=2017-02-03&time=19.00&description=Ringar%20p%C3%A5%20vattnet
 POST	/event/create					controllers.EventController.createEvent()
-
+POST 	/event/update					controllers.EventController.updateEvent()
 POST	/event/testpost					controllers.EventController.postTest()
 
-
-# Update-anrop: http://localhost:9000/event/update?eventId=1&locationId=44&date=2017-06-03&time=15.00&description=Yo%20biatch!
-GET 	/event/update					controllers.EventController.updateEvent()
 #GET	/event/delete					controllers.EventController.deleteEvent(id:int)
 #GET	/event/select					controllers.EventController.selectEvent(id:int)
 #GET	/event/selectAll				controllers.EventController.selectEvent(id:int)
