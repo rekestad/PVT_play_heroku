@@ -12,9 +12,7 @@ GET     /message                    controllers.AsyncController.message
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-GET		/hello				controllers.HomeController.helloThere
-
-GET		/helloworld/:input				controllers.TestClass.helloworld(input: String, id)
+GET		/hello							controllers.HomeController.helloThere
 
 GET		/user/add						controllers.UserController.addUsr(id:Long, fname:String, lname:String)
 
@@ -22,18 +20,12 @@ GET		/user/list-all					controllers.UserController.listUsrs
 GET     /user/amountOfLikes             controllers.UserController.getAmountOfLikes(id:Integer)
 GET     /user/getUser                   controllers.UserController.getUser(id:Integer)
 
-GET		/test-db						controllers.PlayDBTest.listUsrs
-
-GET		/test-db/make					controllers.PlayDBTest.makeUsr(age:Integer, name:String, desc:String)
-
 #GET	/importSthlmData				controllers.SthlmDataController.importAll
 #GET	/updateSthlmData				controllers.SthlmDataController.updateAll
 
-#GET    /location/add                   controllers.LocationClass.addLocation(sthlm_id:String, name:String, name_short:String, loc_type:Integer, x:Double, y:Double)
 GET     /location/listLocations         controllers.LocationController.listLocations
 GET     /location/getLocation           controllers.LocationController.getLocation(id:Integer)
 GET     /location/search                controllers.LocationController.searchLocations(search:String)
-#GET    /location-db/make               controllers.LocationController.makeLocation(name:String, loc_type:Integer, x:Double, y:Double)
 
 POST	/event/create					controllers.EventController.createEvent()
 POST 	/event/update					controllers.EventController.updateEvent()
