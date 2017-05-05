@@ -1,20 +1,19 @@
 package controllers;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import javax.inject.Inject;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
 import controllers.tools.SQLTools;
-import play.data.DynamicForm;
 import play.data.FormFactory;
 import play.db.Database;
-import play.mvc.Controller;
 import play.mvc.Result;
 
-public class EventController extends Controller {
+public class EventController extends DBController {
 	private Database db;
 	private String exceptionMessage;
+	private ArrayList<String> returnData;
+	private SQLTools.ResultSetProcesser returnRp;
 
 	@Inject
 	FormFactory fc;
@@ -23,64 +22,157 @@ public class EventController extends Controller {
 	public EventController(Database db, FormFactory fc) {
 		this.db = db;
 		exceptionMessage = "";
+		returnData = new ArrayList<String>();
+
+		returnRp = rs -> {
+			while (rs.next()) {
+				int id = rs.getInt("event_id");
+				int locationId = rs.getInt("location_id");
+				String locationName = rs.getString("location_name");
+				int userId = rs.getInt("user_id");
+				String date = rs.getString("date");
+				String startTime = rs.getString("start_time");
+				String endTime = rs.getString("end_time");
+				String desc = rs.getString("description");
+
+				addReturnData("{\"event_id\":\"" + id + "\", \"location_id\":\"" + locationId + "\", \"location_name\":\"" + locationName + "\", \"user_id\":\""
+						+ userId + "\", \"date\":\"" + date + "\", \"start_time\":\"" + startTime
+						+ "\", \"end_time\":\"" + endTime + "\", \"description\":\"" + desc + "\"}");
+			}
+		};
+	}
+
+	private void addReturnData(String data) {
+		returnData.add(data);
+	}
+
+	private String getReturnData() {
+		String str = "";
+
+		if (!returnData.isEmpty()) {
+			for (int i = 0; i < returnData.size(); i++) {
+				str += returnData.get(i);
+				if (i != (returnData.size() - 1))
+					str += ", \n";
+			}
+
+			return str;
+		} else {
+			return "No records found.";
+		}
+
 	}
 
 	public Result createEvent() {
 		JsonNode jNode = request().body().asJson();
-		//String name = js.findPath("name").textValue();
-		
-		//DynamicForm requestData = fc.form().bindFromRequest();
-		String sql = "INSERT INTO Events VALUES (NULL, ?, ?, ?)";
+		String sql = "INSERT INTO Events VALUES (NULL, ?, ?, ?, ?, ?, ?, 1)";
+		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events), ?)";
 
 		SQLTools.StatementFiller sf = pstmt -> {
 			pstmt.setString(1, jNode.findPath("locationId").textValue());
-			pstmt.setString(2, jNode.findPath("date").textValue() + " " + jNode.findPath("time").textValue());
-			pstmt.setString(3, jNode.findPath("description").textValue());
+			pstmt.setString(2, jNode.findPath("userId").textValue());
+			pstmt.setString(3, jNode.findPath("date").textValue());
+			pstmt.setString(4, jNode.findPath("startTime").textValue());
+			pstmt.setString(5, jNode.findPath("startTime").textValue());
+			pstmt.setString(6, jNode.findPath("description").textValue());
 		};
 
-		if (executeQuery(sql, sf, null))
-			return ok("Event created.");
-		else
-			return badRequest("Error: " + exceptionMessage);
+		SQLTools.StatementFiller sf2 = pstmt -> {
+			pstmt.setString(1, jNode.findPath("userId").textValue());
+		};
+
+		if (executeQuery(sql, sf, null)) {
+			if (executeQuery(sql2, sf2, null))
+				return created("Event created and user attended.");
+		}
+
+		return badRequest("Error: " + exceptionMessage);
 	}
 
 	public Result updateEvent() {
-		DynamicForm requestData = fc.form().bindFromRequest();
-		String sql = "UPDATE Events SET location_id = ?, date_time = ?, description = ? WHERE event_id = ?";
+		JsonNode jNode = request().body().asJson();
+		String sql = "UPDATE Events SET location_id = ?, date = ?, start_time = ?, end_time = ?, description = ? WHERE event_id = ? AND user_id = ?";
 
 		SQLTools.StatementFiller sf = pstmt -> {
-			pstmt.setString(1, requestData.get("locationId"));
-			pstmt.setString(2, requestData.get("date") + " " + requestData.get("time"));
-			pstmt.setString(3, requestData.get("description"));
-			pstmt.setString(4, requestData.get("eventId"));
+			pstmt.setString(1, jNode.findPath("locationId").textValue());
+			pstmt.setString(2, jNode.findPath("date").textValue());
+			pstmt.setString(3, jNode.findPath("startTime").textValue());
+			pstmt.setString(4, jNode.findPath("endTime").textValue());
+			pstmt.setString(5, jNode.findPath("description").textValue());
+			pstmt.setString(6, jNode.findPath("eventId").textValue());
+			pstmt.setString(7, jNode.findPath("userId").textValue());
 		};
 
 		if (executeQuery(sql, sf, null))
-			return ok("Event updated.");
+			return ok("Query executed.");
 		else
 			return badRequest("Error: " + exceptionMessage);
 	}
 
-	public Result deleteEvent(int eventId) {
-		return ok("Undefined method.");
+	public Result cancelEvent() {
+		JsonNode jNode = request().body().asJson();
+		String sql = "UPDATE Events SET status = 0 WHERE event_id = ? AND user_id = ?";
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setString(1, jNode.findPath("eventId").textValue());
+			pstmt.setString(2, jNode.findPath("userId").textValue());
+		};
+
+		if (executeQuery(sql, sf, null))
+			return ok("Query executed.");
+		else
+			return badRequest("Error: " + exceptionMessage);
 	}
 
 	public Result selectEvent(int eventId) {
+		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.event_id = ? AND Events.location_id = Locations.location_id";
+
+		SQLTools.StatementFiller sf = stmt -> {
+			stmt.setInt(1, eventId);
+		};
+
+		if (executeQuery(sql, sf, returnRp))
+			return ok(getReturnData());
+		else
+			return badRequest("Error: " + exceptionMessage);
+	}
+
+	public Result selectUserAttendedEvents(int userId) {
+		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.location_id = Locations.location_id AND EXISTS (SELECT * FROM Event_attendees WHERE user_id = ?)";
+
+		SQLTools.StatementFiller sf = stmt -> {
+			stmt.setInt(1, userId);
+		};
+
+		if (executeQuery(sql, sf, returnRp))
+			return ok(getReturnData());
+		else
+			return badRequest("Error: " + exceptionMessage);
+	}
+
+	public Result selectEventsAtFavouriteLocations(int userId) {
 		return ok("Undefined method.");
 	}
 
-	public Result selectEventsByFavourite(int userId) {
+	public Result addEventAttendee() {
+		JsonNode jNode = request().body().asJson();
+		String sql = "INSERT INTO Event_attendees VALUES (?, ?)";
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setString(1, jNode.findPath("eventId").textValue());
+			pstmt.setString(2, jNode.findPath("userId").textValue());
+		};
+
+		if (executeQuery(sql, sf, null))
+			return created("Query executed.");
+		else
+			return badRequest("Error: " + exceptionMessage);
+	}
+	
+	public Result deleteEventAttendee(int eventId, int userId) {
 		return ok("Undefined method.");
 	}
-
-	public Result selectEventCloseToPosition(int x, int y) {
-		return ok("Undefined method.");
-	}
-
-	public Result addEventAttendee(int eventId, int userId) {
-		return ok("Undefined method.");
-	}
-
+	
 	public Result selectEventAttendees(int eventId) {
 		return ok("Undefined method.");
 	}
@@ -105,37 +197,12 @@ public class EventController extends Controller {
 
 		return true;
 	}
-	
-	public Result postTest() {
-		
 
-//def Secured[A](username: String, password: String)(action: Action[A]) = Action(action.parser) { request =>
-//  request.headers.get("Authorization").flatMap { authorization =>
-//    authorization.split(" ").drop(1).headOption.filter { encoded =>
-//      new String(org.apache.commons.codec.binary.Base64.decodeBase64(encoded.getBytes)).split(":").toList match {
-//        case u :: p :: Nil if u == username && password == p => true
-//        case _ => false
-//      }
-//    }.map(_ => action(request))
-//  }.getOrElse {
-//    Unauthorized.withHeaders("WWW-Authenticate" -> """Basic realm="Secured"""")
-//  }
-//}
-		JsonNode json = request().body().asJson();
-		String name = json.findPath("name").textValue();
-		
-		String authorization = request().headers().get("Authorization").toString();
-		
-		//DynamicForm requestData = fc.form().bindFromRequest();
-		
-//		if (authorization != null && authorization.startsWith("Basic")) {
-//	        // Authorization: Basic base64credentials
-//	        String base64Credentials = authorization.substring("Basic".length()).trim();
-//	        String credentials = new String(Base64.getDecoder().decode(base64Credentials),
-//	                Charset.forName("UTF-8"));
-//	        // credentials = username:password
-//	        final String[] values = credentials.split(":",2);
-		
-		return ok("Request header is: ");
+	public Result postTest() {
+		if (authenticateRequest(request().getHeader(AUTHORIZATION))) {
+			return ok("User authenticated OK!");
+		} else {
+			return ok("User NOT OK!");
+		}
 	}
 }
