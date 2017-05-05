@@ -8,8 +8,9 @@ import controllers.tools.SQLTools;
 import play.data.FormFactory;
 import play.db.Database;
 import play.mvc.Result;
+import play.mvc.Controller;
 
-public class EventController extends DBController {
+public class EventController extends Controller {
 	private Database db;
 	private String exceptionMessage;
 	private ArrayList<String> returnData;
@@ -198,11 +199,11 @@ public class EventController extends DBController {
 		return true;
 	}
 
-	public Result postTest() {
-		if (authenticateRequest(request().getHeader(AUTHORIZATION))) {
-			return ok("User authenticated OK!");
-		} else {
-			return ok("User NOT OK!");
-		}
-	}
+//	public Result postTest() {
+//		if (authenticateRequest(request().getHeader(AUTHORIZATION))) {
+//			return ok("User authenticated OK!");
+//		} else {
+//			return ok("User NOT OK!");
+//		}
+//	}
 }
