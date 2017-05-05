@@ -28,7 +28,7 @@ public class LocationController extends Controller {
                 double x = rs.getDouble("position_x");
                 double y = rs.getDouble("position_y");
 
-                result[0] += "{ location_id: $id, name_short: ${name_short}, location_type: $loc_type, position_x: $x, location_y: $y}, \n";
+                result[0] += "{ \"location_id\":\""+id+"\" \"name_short\":\""+name_short+"\" \"location_type\":\""+loc_type+"\" \"position_x\":\""+x+"\" \"location_y\":\""+y+"\", \n";
             }
             result[0] += "]";
         };
@@ -37,6 +37,35 @@ public class LocationController extends Controller {
             SQLTools.doPreparedStatement(db, "SELECT * FROM Locations", sf, rp);
         } catch (SQLException e) {
             return ok("couldn't list locations");
+        }
+
+        return ok(result[0]);
+    }
+
+    public Result getLocation(int id){
+        final String[] result = {"["};
+        String id2 = ""+id;
+
+        SQLTools.StatementFiller sf = stmt -> {
+            stmt.setString(1, id2);
+        };
+        SQLTools.ResultSetProcesser rp = rs -> {
+            while (rs.next()){
+                int locationId  = rs.getInt("location_id");
+                String name_short = rs.getString("name_short");
+                int loc_type = rs.getInt("location_type");
+                double x = rs.getDouble("position_x");
+                double y = rs.getDouble("position_y");
+
+                result[0] += "{ \"location_id\":\""+locationId+"\" \"name_short\":\""+name_short+"\" \"location_type\":\""+loc_type+"\" \"position_x\":\""+x+"\" \"location_y\":\""+y+"\", \n";
+            }
+            result[0] += "]";
+        };
+
+        try{
+            SQLTools.doPreparedStatement(db, "SELECT * FROM Locations WHERE location_id=?", sf, rp);
+        }catch(SQLException e){
+            return ok("couldn't load location");
         }
 
         return ok(result[0]);

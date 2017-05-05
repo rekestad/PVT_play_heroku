@@ -1,12 +1,11 @@
 package controllers;
 
-import javax.inject.Inject;
-
 import controllers.tools.SQLTools;
 import play.db.Database;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import javax.inject.Inject;
 import java.sql.SQLException;
 
 /**
@@ -47,8 +46,8 @@ public class UserController extends Controller {
 	public Result addUsr(long id, String fname, String lname) {
 		SQLTools.StatementFiller sf = pstmt -> {
 			pstmt.setLong(1, id);
-			pstmt.setString(3, fname);
-			pstmt.setString(2, lname);
+			pstmt.setString(2, fname);
+			pstmt.setString(3, lname);
 		};
 
 		SQLTools.ResultSetProcesser rp = rs -> {
@@ -61,6 +60,59 @@ public class UserController extends Controller {
 		}
 
 		return ok("made user?");
+	}
+
+	public Result getUser(int id){
+		final String[] result = {"["};
+		String id2 = ""+id;
+
+		SQLTools.StatementFiller sf = stmt -> {
+			stmt.setString(1, id2);
+		};
+		SQLTools.ResultSetProcesser rp = rs -> {
+			while (rs.next()){
+				int userId = rs.getInt("user_id");
+				String fname = rs.getString("first_name");
+				String lname = rs.getString("last_name");
+
+				result[0] += "{ \"user_id\":\""+userId+"\" \"first_name\":\""+fname+" \"last_name\":\""+lname+"  }, \n";
+			}
+			result[0] += "]";
+		};
+
+		try{
+			SQLTools.doPreparedStatement(db, "SELECT * FROM Users WHERE user_id=?", sf, rp);
+		}catch(SQLException e){
+			return ok("couldn't load user");
+		}
+
+		return ok(result[0]);
+	}
+
+	public Result getAmountOfLikes(int id){
+		final String[] result = {"["};
+		String id2 = ""+id;
+
+		SQLTools.StatementFiller sf = stmt -> {
+			stmt.setString(1, id2);
+		};
+		SQLTools.ResultSetProcesser rp = rs -> {
+			while (rs.next() && !rs.isLast()){
+				int likes = rs.getInt("amount_of_likes");
+				result[0] += "{ \"amount_of_likes\":\""+likes+"\"  }, \n";
+			}
+			int likes = rs.getInt("amount_of_likes");
+			result[0] += "{ \"amount_of_likes\":\""+likes+"\"  } ]";
+			//result[0] += "]";
+		};
+
+		try{
+			SQLTools.doPreparedStatement(db, "SELECT COUNT(*) AS amount_of_likes FROM User_likes WHERE user_id2=?", sf, rp);
+		}catch(SQLException e){
+			return ok("couldn't load likes");
+		}
+
+		return ok(result[0]);
 	}
 }
 
