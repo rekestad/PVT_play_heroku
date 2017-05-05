@@ -37,10 +37,7 @@ GET     /location/search                controllers.LocationController.searchLoc
 
 POST	/event/create					controllers.EventController.createEvent()
 POST 	/event/update					controllers.EventController.updateEvent()
-POST	/event/testpost					controllers.EventController.postTest()
-
-#GET	/event/delete					controllers.EventController.deleteEvent(id:int)
-#GET	/event/select					controllers.EventController.selectEvent(id:int)
-#GET	/event/selectAll				controllers.EventController.selectEvent(id:int)
-#GET	/event/selectFavourites			controllers.EventController.selectEvent(id:int)
-#GET	/event/selectFavourites			controllers.EventController.selectEvent(id:int)
+POST 	/event/cancel					controllers.EventController.cancelEvent()
+POST	/event/attend					controllers.EventController.addEventAttendee()
+GET		/event/select					controllers.EventController.selectEvent(eventId:Integer)
+GET		/event/select-by-user			controllers.EventController.selectUserAttendedEvents(userId:Integer)
