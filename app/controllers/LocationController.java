@@ -44,9 +44,11 @@ public class LocationController extends Controller {
 
     public Result searchLocations(String search){
         final String[] result = {"["};
+        search += "%";
+        final String search2 = search;
 
         SQLTools.StatementFiller sf = stmt -> {
-            stmt.setString(1, search);
+            stmt.setString(1, search2);
         };
         SQLTools.ResultSetProcesser rp = rs -> {
             while (rs.next() && !rs.isLast()){
@@ -58,7 +60,7 @@ public class LocationController extends Controller {
         };
 
         try{
-            SQLTools.doPreparedStatement(db, "SELECT name FROM Locations WHERE name REGEXP ?", sf, rp);
+            SQLTools.doPreparedStatement(db, "SELECT name FROM Locations WHERE name LIKE ?", sf, rp);
         }catch(SQLException e){
             return ok("couldn't load search");
         }
