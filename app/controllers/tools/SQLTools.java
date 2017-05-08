@@ -2,10 +2,7 @@ package controllers.tools;
 
 import play.db.Database;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * Created by felix on 2017-04-28.
@@ -47,5 +44,36 @@ public class SQLTools {
 
 	public interface ResultSetProcesser {
 		void processResultSet(ResultSet rs) throws SQLException;
+	}
+
+	public static String columnsAndRowsToJSON(ResultSet rs) throws SQLException {
+		String result = "[";
+		ResultSetMetaData metaData = rs.getMetaData();
+
+		String[] columns = new String[metaData.getColumnCount()];
+		for (int i = 0; i < columns.length; i++) {
+			columns[i] = metaData.getColumnName(i + 1);
+		}
+
+		boolean hasNext = rs.next();
+		if (hasNext) {
+			while (hasNext && !rs.isLast()){
+				result += "{ ";
+
+				for (int i = 0; i < columns.length; i++) {
+					result += " \"" + columns[i] + "\": \"" + rs.getString(columns[i]) + "\", ";
+				}
+
+				result += "  }, \n";
+				hasNext = rs.next();
+			}
+
+			result += "{ ";
+			for (int i = 0; i < columns.length; i++) {
+				result += " \"" + columns[i] + "\": \"" + rs.getString(columns[i]) + "\", ";
+			}
+			result += " }]";
+		}
+		return result;
 	}
 }
