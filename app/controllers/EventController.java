@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 public class EventController extends AppController {
 	private SQLTools.ResultSetProcesser returnEventRp;
+	//private Database db;
 
 	@Inject
 	public EventController(Database db) {
@@ -179,6 +180,23 @@ public class EventController extends AppController {
 
 		if (executeQuery(sql, sf, rp))
 			return ok(getReturnData());
+		else
+			return badRequest(getMessage());
+	}
+
+	public Result addToChat(int eventId, int userId, String message){
+
+		JsonNode jNode = request().body().asJson();
+		String sql = "INSERT INTO Chats (event_id, user_id, message) VALUES (?,?,?)";
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setInt(2, eventId);
+			pstmt.setInt(3, userId);
+			pstmt.setString(5, message);
+		};
+
+		if (executeQuery(sql, sf, null))
+			return created("Message added.");
 		else
 			return badRequest(getMessage());
 	}
