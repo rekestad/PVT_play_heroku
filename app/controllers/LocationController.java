@@ -73,7 +73,7 @@ public class LocationController extends Controller {
 	}
 
 	public Result searchLocations(String search) {
-		final String[] result = {"["};
+		final String[] result = {""};
 		search += "%";
 		final String search2 = search;
 
@@ -81,24 +81,7 @@ public class LocationController extends Controller {
 			stmt.setString(1, search2);
 		};
 		SQLTools.ResultSetProcesser rp = rs -> {
-			ResultSetMetaData metaData = rs.getMetaData();
-
-			String[] columns = new String[metaData.getColumnCount()];
-			for (int i = 0; i < columns.length; i++) {
-				columns[i] = metaData.getColumnName(i+1);
-			}
-
-			while (rs.next() && !rs.isLast()) {
-				result[0] += "{ ";
-
-				for (int i=0; i < columns.length; i++) {
-					result[0] += " \"" + columns[i] + "\": \"" + rs.getString(columns[i]) + "\", ";
-				}
-
-				result[0] += "  }, \n";
-			}
-			String name = rs.getString("name");
-			result[0] += "{ \"name\":\"" + name + "\"  } ]";
+			result[0] = getAllColumnsAndRow(rs);
 		};
 
 		try {
@@ -107,7 +90,37 @@ public class LocationController extends Controller {
 			return ok("couldn't load search");
 		}
 
+
 		return ok(result[0]);
+	}
+
+	private String getAllColumnsAndRow(ResultSet rs) throws SQLException {
+		String result = "";
+		ResultSetMetaData metaData = rs.getMetaData();
+
+		String[] columns = new String[metaData.getColumnCount()];
+		for (int i = 0; i < columns.length; i++) {
+			columns[i] = metaData.getColumnName(i + 1);
+		}
+
+		if (rs.next()) {
+			do {
+				result += "{ ";
+
+				for (int i = 0; i < columns.length; i++) {
+					result += " \"" + columns[i] + "\": \"" + rs.getString(columns[i]) + "\", ";
+				}
+
+				result += "  }, \n";
+			} while (rs.next() && !rs.isLast());
+
+			result += "{ ";
+			for (int i = 0; i < columns.length; i++) {
+				result += " \"" + columns[i] + "\": \"" + rs.getString(columns[i]) + "\", ";
+			}
+			result += " }]";
+		}
+		return result;
 	}
 
 }
