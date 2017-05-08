@@ -1,14 +1,15 @@
 package controllers;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import javax.inject.Inject;
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.tools.SQLTools;
 import play.data.FormFactory;
 import play.db.Database;
-import play.mvc.Result;
 import play.mvc.Controller;
+import play.mvc.Result;
+
+import javax.inject.Inject;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class EventController extends Controller {
 	private Database db;
@@ -197,6 +198,33 @@ public class EventController extends Controller {
 		}
 
 		return true;
+	}
+
+	public Result getChat(int eventId){
+		final String[] result = {"["};
+		String id2 = ""+eventId;
+
+		SQLTools.StatementFiller sf = stmt -> {
+			stmt.setString(1, id2);
+		};
+		SQLTools.ResultSetProcesser rp = rs -> {
+			while (rs.next()){
+				//int event_id  = rs.getInt("event_id");
+				int userId = rs.getInt("user_id");
+				String message = rs.getString("message");
+
+				result[0] += "{ \"user_id\":\""+userId+"\" \"message\":\""+message+"\", \n";
+			}
+			result[0] += "]";
+		};
+
+		try{
+			SQLTools.doPreparedStatement(db, "SELECT * FROM `Chat` WHERE event_id = ?", sf, rp);
+		}catch(SQLException e){
+			return ok("couldn't load chat");
+		}
+
+		return ok(result[0]);
 	}
 
 //	public Result postTest() {

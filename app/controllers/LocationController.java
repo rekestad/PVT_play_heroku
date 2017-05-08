@@ -84,12 +84,11 @@ public class LocationController extends Controller {
                 String name = rs.getString("name");
                 result[0] += "{ \"name\":\""+name+"\"  }, \n";
             }
-            String name = rs.getString("name");
-            result[0] += "{ \"name\":\""+name+"\"  } ]";
+            result[0] += "]";
         };
 
         try{
-            SQLTools.doPreparedStatement(db, "SELECT name FROM Locations WHERE name LIKE ?", sf, rp);
+            SQLTools.doPreparedStatement(db, "SELECT name, location_id FROM Locations WHERE name LIKE ?", sf, rp);
         }catch(SQLException e){
             return ok("couldn't load search");
         }
