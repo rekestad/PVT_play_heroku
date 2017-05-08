@@ -2,12 +2,11 @@ package controllers;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 import javax.inject.Inject;
-
 import controllers.tools.SQLTools;
 import play.db.Database;
 import play.mvc.Controller;
+
 
 public abstract class AppController extends Controller {
 	private Database db;

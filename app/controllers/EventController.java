@@ -2,8 +2,10 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.tools.SQLTools;
+import controllers.tools.SecuredAction;
 import play.db.Database;
 import play.mvc.Result;
+import play.mvc.With;
 
 import javax.inject.Inject;
 
@@ -95,7 +97,8 @@ public class EventController extends AppController {
 		else
 			return badRequest(getMessage());
 	}
-
+	
+	@With(SecuredAction.class)
 	public Result selectEvent(int eventId) {
 		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.event_id = ? AND Events.location_id = Locations.location_id";
 
