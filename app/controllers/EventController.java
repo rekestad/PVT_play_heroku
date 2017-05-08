@@ -233,7 +233,7 @@ public class EventController extends Controller {
 		};
 
 		try{
-			SQLTools.doPreparedStatement(db, "SELECT * FROM `Chat` WHERE event_id = ?", sf, rp);
+			SQLTools.doPreparedStatement(db, "SELECT * FROM `Chat` WHERE event_id = ? ORDER BY date_time", sf, rp);
 		}catch(SQLException e){
 			return ok("couldn't load chat");
 		}
