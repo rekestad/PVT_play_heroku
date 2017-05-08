@@ -17,21 +17,12 @@ public class LocationController extends Controller {
 	}
 
 	public Result listLocations() {
-		final String[] result = {"["};
+		final String[] result = {""};
 
 		SQLTools.StatementFiller sf = stmt -> {
 		};
 		SQLTools.ResultSetProcesser rp = rs -> {
-			while (rs.next()) {
-				int id = rs.getInt("location_id");
-				String name_short = rs.getString("name_short");
-				int loc_type = rs.getInt("location_type");
-				double x = rs.getDouble("position_x");
-				double y = rs.getDouble("position_y");
-
-				result[0] += "{ \"location_id\":\"" + id + "\" \"name_short\":\"" + name_short + "\" \"location_type\":\"" + loc_type + "\" \"position_x\":\"" + x + "\" \"location_y\":\"" + y + "\", \n";
-			}
-			result[0] += "]";
+			result[0] = SQLTools.columnsAndRowsToJSON(rs);
 		};
 
 		try {
@@ -44,23 +35,14 @@ public class LocationController extends Controller {
 	}
 
 	public Result getLocation(int id) {
-		final String[] result = {"["};
+		final String[] result = {""};
 		String id2 = "" + id;
 
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setString(1, id2);
 		};
 		SQLTools.ResultSetProcesser rp = rs -> {
-			while (rs.next()) {
-				int locationId = rs.getInt("location_id");
-				String name_short = rs.getString("name_short");
-				int loc_type = rs.getInt("location_type");
-				double x = rs.getDouble("position_x");
-				double y = rs.getDouble("position_y");
-
-				result[0] += "{ \"location_id\":\"" + locationId + "\" \"name_short\":\"" + name_short + "\" \"location_type\":\"" + loc_type + "\" \"position_x\":\"" + x + "\" \"location_y\":\"" + y + "\", \n";
-			}
-			result[0] += "]";
+			result[0] = SQLTools.columnsAndRowsToJSON(rs);
 		};
 
 		try {
@@ -81,7 +63,7 @@ public class LocationController extends Controller {
 			stmt.setString(1, search2);
 		};
 		SQLTools.ResultSetProcesser rp = rs -> {
-			result[0] = getAllColumnsAndRow(rs);
+			result[0] = SQLTools.columnsAndRowsToJSON(rs);
 		};
 
 		try {
@@ -92,35 +74,6 @@ public class LocationController extends Controller {
 
 
 		return ok(result[0]);
-	}
-
-	private String getAllColumnsAndRow(ResultSet rs) throws SQLException {
-		String result = "";
-		ResultSetMetaData metaData = rs.getMetaData();
-
-		String[] columns = new String[metaData.getColumnCount()];
-		for (int i = 0; i < columns.length; i++) {
-			columns[i] = metaData.getColumnName(i + 1);
-		}
-
-		if (rs.next()) {
-			do {
-				result += "{ ";
-
-				for (int i = 0; i < columns.length; i++) {
-					result += " \"" + columns[i] + "\": \"" + rs.getString(columns[i]) + "\", ";
-				}
-
-				result += "  }, \n";
-			} while (rs.next() && !rs.isLast());
-
-			result += "{ ";
-			for (int i = 0; i < columns.length; i++) {
-				result += " \"" + columns[i] + "\": \"" + rs.getString(columns[i]) + "\", ";
-			}
-			result += " }]";
-		}
-		return result;
 	}
 
 }
