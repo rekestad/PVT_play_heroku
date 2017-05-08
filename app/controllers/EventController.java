@@ -11,7 +11,6 @@ import javax.inject.Inject;
 
 public class EventController extends AppController {
 	private SQLTools.ResultSetProcesser returnEventRp;
-	//private Database db;
 
 	@Inject
 	public EventController(Database db) {
@@ -98,7 +97,7 @@ public class EventController extends AppController {
 			return badRequest(getMessage());
 	}
 	
-	@With(SecuredAction.class)
+	//@With(SecuredAction.class)
 	public Result selectEvent(int eventId) {
 		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.event_id = ? AND Events.location_id = Locations.location_id";
 
@@ -186,7 +185,8 @@ public class EventController extends AppController {
 		else
 			return badRequest(getMessage());
 	}
-
+	
+	//@With(SecuredAction.class)
 	public Result insertEventChat(){
 
 		JsonNode jNode = request().body().asJson();
