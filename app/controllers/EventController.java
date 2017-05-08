@@ -162,17 +162,17 @@ public class EventController extends AppController {
 	}
 
 	public Result selectEventChat(int eventId) {
-		String sql = "SELECT user_id, message,  date_format(date_time, '%Y-%m-%d kl %H:%i') date_time FROM `Chats` WHERE event_id = ? ORDER BY date_time";
+		String sql = "SELECT CONCAT(Users.first_name, ' ', Users.last_name) AS name, message, date_format(date_time, '%Y-%m-%d kl %H:%i') date_time FROM Chats, Users WHERE Chats.event_id = ? AND Chats.user_id = Users.user_id ORDER BY Chats.date_time";
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setInt(1, eventId);
 		};
 		SQLTools.ResultSetProcesser rp = rs -> {
 			while (rs.next()) {
-				int userId = rs.getInt("user_id");
+				String name = rs.getString("name");
 				String message = rs.getString("message");
 				String dateTime = rs.getString("date_time");
 
-				addReturnData("{ \"user_id\":\"" + userId + "\" \"message\":\"" + message + "\" \"date_time\":\""
+				addReturnData("{ \"name\":\"" + name + "\" \"message\":\"" + message + "\" \"date_time\":\""
 						+ dateTime + "\"}");
 			}
 		};
