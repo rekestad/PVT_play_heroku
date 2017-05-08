@@ -17,21 +17,12 @@ public class LocationController extends Controller {
 	}
 
 	public Result listLocations() {
-		final String[] result = {"["};
+		final String[] result = {""};
 
 		SQLTools.StatementFiller sf = stmt -> {
 		};
 		SQLTools.ResultSetProcesser rp = rs -> {
-			while (rs.next()) {
-				int id = rs.getInt("location_id");
-				String name_short = rs.getString("name_short");
-				int loc_type = rs.getInt("location_type");
-				double x = rs.getDouble("position_x");
-				double y = rs.getDouble("position_y");
-
-				result[0] += "{ \"location_id\":\"" + id + "\" \"name_short\":\"" + name_short + "\" \"location_type\":\"" + loc_type + "\" \"position_x\":\"" + x + "\" \"location_y\":\"" + y + "\", \n";
-			}
-			result[0] += "]";
+			result[0] = getAllColumnsAndRow(rs);
 		};
 
 		try {
@@ -44,23 +35,14 @@ public class LocationController extends Controller {
 	}
 
 	public Result getLocation(int id) {
-		final String[] result = {"["};
+		final String[] result = {""};
 		String id2 = "" + id;
 
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setString(1, id2);
 		};
 		SQLTools.ResultSetProcesser rp = rs -> {
-			while (rs.next()) {
-				int locationId = rs.getInt("location_id");
-				String name_short = rs.getString("name_short");
-				int loc_type = rs.getInt("location_type");
-				double x = rs.getDouble("position_x");
-				double y = rs.getDouble("position_y");
-
-				result[0] += "{ \"location_id\":\"" + locationId + "\" \"name_short\":\"" + name_short + "\" \"location_type\":\"" + loc_type + "\" \"position_x\":\"" + x + "\" \"location_y\":\"" + y + "\", \n";
-			}
-			result[0] += "]";
+			result[0] = getAllColumnsAndRow(rs);
 		};
 
 		try {
@@ -95,7 +77,7 @@ public class LocationController extends Controller {
 	}
 
 	private String getAllColumnsAndRow(ResultSet rs) throws SQLException {
-		String result = "";
+		String result = "[";
 		ResultSetMetaData metaData = rs.getMetaData();
 
 		String[] columns = new String[metaData.getColumnCount()];
@@ -103,8 +85,9 @@ public class LocationController extends Controller {
 			columns[i] = metaData.getColumnName(i + 1);
 		}
 
-		if (rs.next()) {
-			do {
+		boolean hasNext = rs.next();
+		if (hasNext) {
+			while (hasNext && !rs.isLast()){
 				result += "{ ";
 
 				for (int i = 0; i < columns.length; i++) {
@@ -112,7 +95,8 @@ public class LocationController extends Controller {
 				}
 
 				result += "  }, \n";
-			} while (rs.next() && !rs.isLast());
+				hasNext = rs.next();
+			}
 
 			result += "{ ";
 			for (int i = 0; i < columns.length; i++) {
