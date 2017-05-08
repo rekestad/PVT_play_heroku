@@ -59,21 +59,26 @@ public class SQLTools {
 		if (hasNext) {
 			while (hasNext && !rs.isLast()){
 				result += "{ ";
-
-				for (int i = 0; i < columns.length; i++) {
-					result += " \"" + columns[i] + "\": \"" + rs.getString(columns[i]) + "\", ";
-				}
-
+				result += generateJSONRow(rs, columns);
 				result += "  }, \n";
 				hasNext = rs.next();
 			}
 
 			result += "{ ";
-			for (int i = 0; i < columns.length; i++) {
-				result += " \"" + columns[i] + "\": \"" + rs.getString(columns[i]) + "\", ";
-			}
+			result += generateJSONRow(rs, columns);
 			result += " }]";
 		}
+		return result;
+	}
+
+	private static String generateJSONRow(ResultSet rs, String[] columns) throws SQLException{
+		String result = "";
+
+		for (int i = 0; i < columns.length-1; i++) {
+			result += " \"" + columns[i] + "\": \"" + rs.getString(columns[i]) + "\", ";
+		}
+		result += " \"" + columns[columns.length-1] + "\": \"" + rs.getString(columns[columns.length-1]) + "\"";
+
 		return result;
 	}
 }

@@ -23,7 +23,7 @@ GET     /user/getUser                   controllers.UserController.getUser(id:In
 #GET	/importSthlmData				controllers.SthlmDataController.importAll
 #GET	/updateSthlmData				controllers.SthlmDataController.updateAll
 
-GET     /location/list-all         controllers.LocationController.listLocations
+GET     /location/list-all              controllers.LocationController.listLocations
 GET     /location/getLocation           controllers.LocationController.getLocation(id:Integer)
 GET     /location/search                controllers.LocationController.searchLocations(search:String)
 
