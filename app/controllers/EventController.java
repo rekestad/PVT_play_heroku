@@ -187,15 +187,15 @@ public class EventController extends AppController {
 			return badRequest(getMessage());
 	}
 
-	public Result addToChat(int eventId, int userId, String message){
+	public Result insertEventChat(){
 
 		JsonNode jNode = request().body().asJson();
 		String sql = "INSERT INTO Chats (event_id, user_id, message) VALUES (?,?,?)";
 
 		SQLTools.StatementFiller sf = pstmt -> {
-			pstmt.setInt(2, eventId);
-			pstmt.setInt(3, userId);
-			pstmt.setString(5, message);
+			pstmt.setString(1, jNode.findPath("eventId").textValue());
+			pstmt.setString(2, jNode.findPath("userId").textValue());
+			pstmt.setString(3, jNode.findPath("message").textValue());
 		};
 
 		if (executeQuery(sql, sf, null))
