@@ -35,10 +35,11 @@ public class EventController extends Controller {
 				String startTime = rs.getString("start_time");
 				String endTime = rs.getString("end_time");
 				String desc = rs.getString("description");
+				int status = rs.getInt("status");
 
 				addReturnData("{\"event_id\":\"" + id + "\", \"location_id\":\"" + locationId + "\", \"location_name\":\"" + locationName + "\", \"user_id\":\""
 						+ userId + "\", \"date\":\"" + date + "\", \"start_time\":\"" + startTime
-						+ "\", \"end_time\":\"" + endTime + "\", \"description\":\"" + desc + "\"}");
+						+ "\", \"end_time\":\"" + endTime + "\", \"description\":\"" + desc + "\", \"status\":\"" + status + "\"}");
 			}
 		};
 	}
@@ -56,7 +57,7 @@ public class EventController extends Controller {
 				if (i != (returnData.size() - 1))
 					str += ", \n";
 			}
-
+			returnData.clear();
 			return str;
 		} else {
 			return "No records found.";
@@ -137,8 +138,21 @@ public class EventController extends Controller {
 		else
 			return badRequest("Error: " + exceptionMessage);
 	}
+	
+	public Result selectEventsByLocation(int locationId) {
+		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.location_id = ? AND Events.location_id = Locations.location_id";
 
-	public Result selectUserAttendedEvents(int userId) {
+		SQLTools.StatementFiller sf = stmt -> {
+			stmt.setInt(1, locationId);
+		};
+
+		if (executeQuery(sql, sf, returnRp))
+			return ok(getReturnData());
+		else
+			return badRequest("Error: " + exceptionMessage);
+	}
+
+	public Result selectEventsByUser(int userId) {
 		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.location_id = Locations.location_id AND EXISTS (SELECT * FROM Event_attendees WHERE user_id = ?)";
 
 		SQLTools.StatementFiller sf = stmt -> {
