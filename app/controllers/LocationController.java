@@ -1,5 +1,6 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import controllers.tools.SQLTools;
 import play.db.Database;
 import play.mvc.Controller;
@@ -17,59 +18,55 @@ public class LocationController extends Controller {
 	}
 
 	public Result listLocations() {
-		final String[] result = {""};
+		final JsonNode[] result = {null};
 
-		SQLTools.StatementFiller sf = stmt -> {
-		};
-		SQLTools.ResultSetProcesser rp = rs -> {
-			result[0] = SQLTools.columnsAndRowsToJSON(rs);
-		};
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
 		try {
-			SQLTools.doPreparedStatement(db, "SELECT * FROM Locations", sf, rp);
+			SQLTools.doPreparedStatement(db, "SELECT * FROM Locations", stmt -> {}, rp);
 		} catch (SQLException e) {
-			return ok("couldn't list locations");
+			return internalServerError("couldn't list locations");
 		}
 
 		return ok(result[0]);
 	}
 
 	public Result getLocation(int id) {
-		final String[] result = {""};
+		final JsonNode[] result = {null};
 		String id2 = "" + id;
 
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setString(1, id2);
 		};
-		SQLTools.ResultSetProcesser rp = rs -> {
+		SQLTools.ResultSetProcessor rp = rs -> {
 			result[0] = SQLTools.columnsAndRowsToJSON(rs);
 		};
 
 		try {
 			SQLTools.doPreparedStatement(db, "SELECT * FROM Locations WHERE location_id=?", sf, rp);
 		} catch (SQLException e) {
-			return ok("couldn't load location");
+			return internalServerError("couldn't load location");
 		}
 
 		return ok(result[0]);
 	}
 
 	public Result searchLocations(String search) {
-		final String[] result = {""};
+		final JsonNode[] result = {null};
 		search += "%";
 		final String search2 = search;
 
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setString(1, search2);
 		};
-		SQLTools.ResultSetProcesser rp = rs -> {
+		SQLTools.ResultSetProcessor rp = rs -> {
 			result[0] = SQLTools.columnsAndRowsToJSON(rs);
 		};
 
 		try {
 			SQLTools.doPreparedStatement(db, "SELECT * FROM Locations WHERE name LIKE ?", sf, rp);
 		} catch (SQLException e) {
-			return ok("couldn't load search");
+			return internalServerError("couldn't load search");
 		}
 
 

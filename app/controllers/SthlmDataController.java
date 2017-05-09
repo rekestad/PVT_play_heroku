@@ -76,7 +76,7 @@ public class SthlmDataController extends Controller {
 			pstmt.setString(6, elementGeoPos.getAttribute("y"));
 		};
 
-		SQLTools.ResultSetProcesser rp = rs -> {
+		SQLTools.ResultSetProcessor rp = rs -> {
 		};
 
 		try {
@@ -97,7 +97,7 @@ public class SthlmDataController extends Controller {
 			pstmt.setString(5, elementMain.getAttribute("id"));
 		};
 
-		SQLTools.ResultSetProcesser rp = rs -> {
+		SQLTools.ResultSetProcessor rp = rs -> {
 		};
 
 		try {

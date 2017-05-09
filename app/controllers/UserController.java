@@ -23,7 +23,7 @@ public class UserController extends Controller {
 		final String[] result = {"["};
 
 		SQLTools.StatementFiller sf = stmt -> {};
-		SQLTools.ResultSetProcesser rp = rs -> {
+		SQLTools.ResultSetProcessor rp = rs -> {
 			while(rs.next()){
 				int id  = rs.getInt("user_id");
 				String fName = rs.getString("first_name");
@@ -50,7 +50,7 @@ public class UserController extends Controller {
 			pstmt.setString(3, lname);
 		};
 
-		SQLTools.ResultSetProcesser rp = rs -> {
+		SQLTools.ResultSetProcessor rp = rs -> {
 		};
 
 		try {
@@ -69,7 +69,7 @@ public class UserController extends Controller {
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setString(1, id2);
 		};
-		SQLTools.ResultSetProcesser rp = rs -> {
+		SQLTools.ResultSetProcessor rp = rs -> {
 			while (rs.next()){
 				int userId = rs.getInt("user_id");
 				String fname = rs.getString("first_name");
@@ -96,7 +96,7 @@ public class UserController extends Controller {
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setString(1, id2);
 		};
-		SQLTools.ResultSetProcesser rp = rs -> {
+		SQLTools.ResultSetProcessor rp = rs -> {
 			while (rs.next() && !rs.isLast()){
 				int likes = rs.getInt("amount_of_likes");
 				result[0] += "{ \"amount_of_likes\":\""+likes+"\"  }, \n";

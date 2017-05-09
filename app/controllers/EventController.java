@@ -10,7 +10,7 @@ import play.mvc.With;
 import javax.inject.Inject;
 
 public class EventController extends AppController {
-	private SQLTools.ResultSetProcesser returnEventRp;
+	private SQLTools.ResultSetProcessor returnEventRp;
 
 	@Inject
 	public EventController(Database db) {
@@ -169,7 +169,7 @@ public class EventController extends AppController {
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setInt(1, eventId);
 		};
-		SQLTools.ResultSetProcesser rp = rs -> {
+		SQLTools.ResultSetProcessor rp = rs -> {
 			while (rs.next()) {
 				String name = rs.getString("name");
 				String message = rs.getString("message");

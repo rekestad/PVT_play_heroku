@@ -53,7 +53,7 @@ public abstract class AppController extends Controller {
 
 	}
 	
-	protected boolean executeQuery(String sql, SQLTools.StatementFiller sf, SQLTools.ResultSetProcesser rp) {
+	protected boolean executeQuery(String sql, SQLTools.StatementFiller sf, SQLTools.ResultSetProcessor rp) {
 		if (rp == null) {
 			rp = rs -> {
 			};
