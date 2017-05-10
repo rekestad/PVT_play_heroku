@@ -37,7 +37,7 @@ public abstract class AppController extends Controller {
 	}
 
 	protected String getReturnData() {
-		String str = "";
+		String str = "[";
 
 		if (!returnData.isEmpty()) {
 			for (int i = 0; i < returnData.size(); i++) {
@@ -46,7 +46,7 @@ public abstract class AppController extends Controller {
 					str += ", \n";
 			}
 			returnData.clear();
-			return str;
+			return str + "]";
 		} else {
 			return "No records found.";
 		}
