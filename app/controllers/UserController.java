@@ -122,7 +122,7 @@ public class UserController extends Controller {
 	// New method for creating user
 	public Result createUser() {
 		JsonNode jNode = request().body().asJson();
-		String sql = "INSERT INTO Users VALUES (NULL, ?, ?, ?, ?)";
+		String sql = "INSERT INTO Users VALUES (NULL, ?, ?, ?, NULL)";
 		
 		//String byteString = jNode.findPath("profilePic").textValue();
 		//Blob blob = new javax.sql.rowset.serial.SerialBlob(byteString.getBytes());
