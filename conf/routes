@@ -14,7 +14,6 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 GET		/hello							controllers.HomeController.helloThere
 
-GET		/user/add						controllers.UserController.addUsr(id:Long, fname:String, lname:String)
 POST    /user/create                    controllers.UserController.createUser()
 
 GET		/user/list-all					controllers.UserController.listUsrs
@@ -34,7 +33,7 @@ GET		/event/select-by-location		controllers.EventController.selectEventsByLocati
 GET		/event/select-by-user			controllers.EventController.selectEventsByUser(userId:Integer)
 GET     /event/chat-select              controllers.EventController.selectEventChat(eventId:Integer)
 
-#POST	/event/create					controllers.EventController.createEvent()
+POST	/event/create					controllers.EventController.createEvent()
 #POST 	/event/update					controllers.EventController.updateEvent()
 #POST 	/event/cancel					controllers.EventController.cancelEvent()
 #POST	/event/attend					controllers.EventController.addEventAttendee()

@@ -10,10 +10,45 @@ import java.sql.SQLException;
 
 public class EventController extends Controller {
 	private Database db;
+	private SQLTools.ResultSetProcessor nullRp;
 
 	@Inject
 	public EventController(Database db) {
 		this.db = db;
+		nullRp = rs -> {
+			
+		};
+	}
+	
+	// CREATE EVENT
+	public Result createEvent() {
+		JsonNode jNode = request().body().asJson();
+		String sql = "INSERT INTO Events VALUES (NULL, ?, ?, ?, ?, ?, ?, 1)";
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setInt(1, jNode.findPath("location_id").asInt());
+			pstmt.setInt(2, jNode.findPath("user_id").asInt());
+			pstmt.setString(3, jNode.findPath("date").textValue());
+			pstmt.setString(4, jNode.findPath("start_time").textValue());
+			pstmt.setString(5, jNode.findPath("end_time").textValue());
+			pstmt.setString(6, jNode.findPath("description").textValue());
+		};
+		
+		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
+
+		SQLTools.StatementFiller sf2 = pstmt -> {
+			pstmt.setInt(1, jNode.findPath("user_id").asInt());
+			pstmt.setInt(2, jNode.findPath("user_id").asInt());
+		};
+
+		try {
+			SQLTools.doPreparedStatement(db, sql, sf, nullRp);
+			SQLTools.doPreparedStatement(db, sql2, sf2, nullRp);
+		} catch (SQLException e) {
+			return internalServerError("Error: " + e.toString());
+		}
+
+		return ok("Event created and user attended.");
 	}
 
 	// SELECT EVENT
@@ -70,8 +105,7 @@ public class EventController extends Controller {
 		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name "
 				+ "FROM Events, Locations, Location_types WHERE EXISTS "
 				+ "(SELECT NULL FROM Event_attendees WHERE Event_attendees.event_id = Events.event_id AND "
-				+ "Event_attendees.user_id = ?) AND "
-				+ "Events.location_id = Locations.location_id AND "
+				+ "Event_attendees.user_id = ?) AND " + "Events.location_id = Locations.location_id AND "
 				+ "Locations.location_type = Location_types.type_id";
 
 		SQLTools.StatementFiller sf = stmt -> {
@@ -88,13 +122,12 @@ public class EventController extends Controller {
 
 		return ok(result[0]);
 	}
-	
+
 	// SELECT EVENT ATTENDEES
 	public Result selectEventAttendees(int eventId) {
 		final JsonNode[] result = { null };
 		String sql = "SELECT u.*, (SELECT GROUP_CONCAT(c.age) FROM User_children c WHERE c.parent_id = u.user_id) AS children "
-				+ "FROM Users u WHERE EXISTS "
-				+ "(SELECT NULL FROM Event_attendees e WHERE e.event_id = ? AND "
+				+ "FROM Users u WHERE EXISTS " + "(SELECT NULL FROM Event_attendees e WHERE e.event_id = ? AND "
 				+ "e.user_id = u.user_id)";
 
 		SQLTools.StatementFiller sf = stmt -> {
