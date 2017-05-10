@@ -1,5 +1,6 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import controllers.tools.SQLTools;
 import play.db.Database;
 import play.mvc.Controller;
@@ -44,6 +45,7 @@ public class UserController extends Controller {
 	}
 
 	public Result addUsr(long id, String fname, String lname) {
+		JsonNode jNode = request().body().asJson();
 		SQLTools.StatementFiller sf = pstmt -> {
 			pstmt.setLong(1, id);
 			pstmt.setString(2, fname);
@@ -60,6 +62,31 @@ public class UserController extends Controller {
 		}
 
 		return ok("made user?");
+	}
+
+	public Result createUser() {
+		JsonNode jNode = request().body().asJson();
+		//String sql = "INSERT INTO Event_attendees VALUES (?, ?)";
+
+		//long fb = (long)jNode.findPath("facebook_id").textValue();
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setLong(1, jNode.findPath("facebook_id").asLong());
+			pstmt.setString(2, jNode.findPath("first_name").textValue());
+			pstmt.setString(3, jNode.findPath("last_name").textValue());
+		};
+
+		SQLTools.ResultSetProcessor rp = rs -> {
+		};
+
+		try {
+			SQLTools.doPreparedStatement(db, "INSERT INTO Users (facebook_id, first_name, last_name) VALUES (?,?,?)", sf, rp);
+		} catch (SQLException e) {
+			return ok("couldn't make user");
+		}
+
+		return ok("made user!");
+
 	}
 
 	public Result getUser(int id){

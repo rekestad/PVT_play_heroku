@@ -15,6 +15,7 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET		/hello							controllers.HomeController.helloThere
 
 GET		/user/add						controllers.UserController.addUsr(id:Long, fname:String, lname:String)
+POST    /user/create                    controllers.UserController.createUser()
 
 GET		/user/list-all					controllers.UserController.listUsrs
 GET     /user/amountOfLikes             controllers.UserController.getAmountOfLikes(id:Integer)
