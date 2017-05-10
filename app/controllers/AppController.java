@@ -46,7 +46,7 @@ public abstract class AppController extends Controller {
 					str += ", \n";
 			}
 			returnData.clear();
-			return str + "]";
+			return str + "] ";
 		} else {
 			return "No records found.";
 		}
