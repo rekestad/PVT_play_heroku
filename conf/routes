@@ -28,14 +28,16 @@ GET     /location/list-all              controllers.LocationController.listLocat
 GET     /location/getLocation           controllers.LocationController.getLocation(id:Integer)
 GET     /location/search                controllers.LocationController.searchLocations(search:String)
 
-POST	/event/create					controllers.EventController.createEvent()
-POST 	/event/update					controllers.EventController.updateEvent()
-POST 	/event/cancel					controllers.EventController.cancelEvent()
-POST	/event/attend					controllers.EventController.addEventAttendee()
 GET		/event/select					controllers.EventController.selectEvent(eventId:Integer)
+GET		/event/select-attendees			controllers.EventController.selectEventAttendees(eventId:Integer)
 GET		/event/select-by-location		controllers.EventController.selectEventsByLocation(locationId:Integer)
 GET		/event/select-by-user			controllers.EventController.selectEventsByUser(userId:Integer)
 GET     /event/chat-select              controllers.EventController.selectEventChat(eventId:Integer)
-POST	/event/chat-insert              controllers.EventController.insertEventChat()
+
+#POST	/event/create					controllers.EventController.createEvent()
+#POST 	/event/update					controllers.EventController.updateEvent()
+#POST 	/event/cancel					controllers.EventController.cancelEvent()
+#POST	/event/attend					controllers.EventController.addEventAttendee()
+#POST	/event/chat-insert              controllers.EventController.insertEventChat()
 
 POST	/user/create					controllers.UserController.createUser()				
