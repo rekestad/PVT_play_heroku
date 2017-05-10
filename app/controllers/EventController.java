@@ -2,10 +2,10 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.tools.SQLTools;
-import controllers.tools.SecuredAction;
+//import controllers.tools.SecuredAction;
 import play.db.Database;
 import play.mvc.Result;
-import play.mvc.With;
+//import play.mvc.With;
 
 import javax.inject.Inject;
 
@@ -99,14 +99,19 @@ public class EventController extends AppController {
 	
 	//@With(SecuredAction.class)
 	public Result selectEvent(int eventId) {
-		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.event_id = ? AND Events.location_id = Locations.location_id";
+		final JsonNode[] result = {null};
+		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name, Location_types.type_name AS location_type FROM Events, Locations, Location_types WHERE Events.event_id = ? AND Events.location_id = Locations.location_id AND Locations.location_type = Location_types.type_id";
 
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setInt(1, eventId);
 		};
+		
+		SQLTools.ResultSetProcessor rp = rs -> {
+			result[0] = SQLTools.columnsAndRowsToJSON(rs);
+		};
 
-		if (executeQuery(sql, sf, returnEventRp))
-			return ok(getReturnData());
+		if (executeQuery(sql, sf, rp))
+			return ok(result[0]);
 		else
 			return badRequest(getMessage());
 	}
@@ -125,6 +130,7 @@ public class EventController extends AppController {
 	}
 
 	public Result selectEventsByUser(int userId) {
+		
 		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.location_id = Locations.location_id AND EXISTS (SELECT * FROM Event_attendees WHERE user_id = ?)";
 
 		SQLTools.StatementFiller sf = stmt -> {
@@ -161,34 +167,45 @@ public class EventController extends AppController {
 	}
 
 	public Result selectEventAttendees(int eventId) {
-		return ok("Undefined method.");
-	}
+		final JsonNode[] result = {null};
+		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.event_id = ? AND Events.location_id = Locations.location_id";
 
-	public Result selectEventChat(int eventId) {
-		String sql = "SELECT CONCAT(Users.first_name, ' ', Users.last_name) AS name, message, date_format(date_time, '%Y-%m-%d kl %H:%i') date_time FROM Chats, Users WHERE Chats.event_id = ? AND Chats.user_id = Users.user_id ORDER BY Chats.date_time";
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setInt(1, eventId);
 		};
+		
 		SQLTools.ResultSetProcessor rp = rs -> {
-			while (rs.next()) {
-				String name = rs.getString("name");
-				String message = rs.getString("message");
-				String dateTime = rs.getString("date_time");
-
-				addReturnData("{ \"name\":\"" + name + "\" \"message\":\"" + message + "\" \"date_time\":\""
-						+ dateTime + "\"}");
-			}
+			result[0] = SQLTools.columnsAndRowsToJSON(rs);
 		};
 
 		if (executeQuery(sql, sf, rp))
-			return ok(getReturnData());
+			return ok(result[0]);
+		else
+			return badRequest(getMessage());
+	}
+
+	public Result selectEventChat(int eventId) {
+		final JsonNode[] result = {null};
+		
+		String sql = "SELECT CONCAT(Users.first_name, ' ', Users.last_name) AS name, message, date_format(date_time, '%Y-%m-%d kl %H:%i') date_time FROM Chats, Users WHERE Chats.event_id = ? AND Chats.user_id = Users.user_id ORDER BY Chats.date_time";
+		
+		SQLTools.StatementFiller sf = stmt -> {
+			stmt.setInt(1, eventId);
+		};
+		
+		SQLTools.ResultSetProcessor rp = rs -> {
+			result[0] = SQLTools.columnsAndRowsToJSON(rs);
+		};
+
+		if (executeQuery(sql, sf, rp))
+			return ok(result[0]);
 		else
 			return badRequest(getMessage());
 	}
 	
 	//@With(SecuredAction.class)
 	public Result insertEventChat(){
-
+		
 		JsonNode jNode = request().body().asJson();
 		String sql = "INSERT INTO Chats (event_id, user_id, message) VALUES (?,?,?)";
 
@@ -203,4 +220,6 @@ public class EventController extends AppController {
 		else
 			return badRequest(getMessage());
 	}
+	
+	
 }
