@@ -100,7 +100,7 @@ public class EventController extends AppController {
 	//@With(SecuredAction.class)
 	public Result selectEvent(int eventId) {
 		final JsonNode[] result = {null};
-		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.event_id = ? AND Events.location_id = Locations.location_id";
+		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name, Location_types.type_name AS location_type FROM Events, Locations, Location_types WHERE Events.event_id = ? AND Events.location_id = Locations.location_id AND Locations.location_type = Location_types.type_id";
 
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setInt(1, eventId);
