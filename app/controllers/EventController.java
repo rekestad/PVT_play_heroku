@@ -2,10 +2,10 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.tools.SQLTools;
-import controllers.tools.SecuredAction;
+//import controllers.tools.SecuredAction;
 import play.db.Database;
 import play.mvc.Result;
-import play.mvc.With;
+//import play.mvc.With;
 
 import javax.inject.Inject;
 
@@ -165,23 +165,20 @@ public class EventController extends AppController {
 	}
 
 	public Result selectEventChat(int eventId) {
+		final JsonNode[] result = {null};
+		
 		String sql = "SELECT CONCAT(Users.first_name, ' ', Users.last_name) AS name, message, date_format(date_time, '%Y-%m-%d kl %H:%i') date_time FROM Chats, Users WHERE Chats.event_id = ? AND Chats.user_id = Users.user_id ORDER BY Chats.date_time";
+		
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setInt(1, eventId);
 		};
+		
 		SQLTools.ResultSetProcessor rp = rs -> {
-			while (rs.next()) {
-				String name = rs.getString("name");
-				String message = rs.getString("message");
-				String dateTime = rs.getString("date_time");
-
-				addReturnData("{ \"name\":\"" + name + "\" \"message\":\"" + message + "\" \"date_time\":\""
-						+ dateTime + "\"}");
-			}
+			result[0] = SQLTools.columnsAndRowsToJSON(rs);
 		};
 
 		if (executeQuery(sql, sf, rp))
-			return ok(getReturnData());
+			return ok(result[0]);
 		else
 			return badRequest(getMessage());
 	}
