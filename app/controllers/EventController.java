@@ -99,14 +99,19 @@ public class EventController extends AppController {
 	
 	//@With(SecuredAction.class)
 	public Result selectEvent(int eventId) {
+		final JsonNode[] result = {null};
 		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.event_id = ? AND Events.location_id = Locations.location_id";
 
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setInt(1, eventId);
 		};
+		
+		SQLTools.ResultSetProcessor rp = rs -> {
+			result[0] = SQLTools.columnsAndRowsToJSON(rs);
+		};
 
-		if (executeQuery(sql, sf, returnEventRp))
-			return ok(getReturnData());
+		if (executeQuery(sql, sf, rp))
+			return ok(result[0]);
 		else
 			return badRequest(getMessage());
 	}
@@ -125,6 +130,7 @@ public class EventController extends AppController {
 	}
 
 	public Result selectEventsByUser(int userId) {
+		
 		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.location_id = Locations.location_id AND EXISTS (SELECT * FROM Event_attendees WHERE user_id = ?)";
 
 		SQLTools.StatementFiller sf = stmt -> {
@@ -161,7 +167,21 @@ public class EventController extends AppController {
 	}
 
 	public Result selectEventAttendees(int eventId) {
-		return ok("Undefined method.");
+		final JsonNode[] result = {null};
+		String sql = "SELECT DISTINCT Events.*, Locations.name AS location_name FROM Events, Locations WHERE Events.event_id = ? AND Events.location_id = Locations.location_id";
+
+		SQLTools.StatementFiller sf = stmt -> {
+			stmt.setInt(1, eventId);
+		};
+		
+		SQLTools.ResultSetProcessor rp = rs -> {
+			result[0] = SQLTools.columnsAndRowsToJSON(rs);
+		};
+
+		if (executeQuery(sql, sf, rp))
+			return ok(result[0]);
+		else
+			return badRequest(getMessage());
 	}
 
 	public Result selectEventChat(int eventId) {
@@ -185,7 +205,7 @@ public class EventController extends AppController {
 	
 	//@With(SecuredAction.class)
 	public Result insertEventChat(){
-
+		
 		JsonNode jNode = request().body().asJson();
 		String sql = "INSERT INTO Chats (event_id, user_id, message) VALUES (?,?,?)";
 
@@ -200,4 +220,6 @@ public class EventController extends AppController {
 		else
 			return badRequest(getMessage());
 	}
+	
+	
 }

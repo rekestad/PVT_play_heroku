@@ -6,6 +6,10 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.inject.Inject;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.sql.Blob;
 import java.sql.SQLException;
 
 /**
@@ -113,6 +117,32 @@ public class UserController extends Controller {
 		}
 
 		return ok(result[0]);
+	}
+	
+	// New method for creating user
+	public Result createUser() {
+		JsonNode jNode = request().body().asJson();
+		String sql = "INSERT INTO Users VALUES (NULL, ?, ?, ?, ?)";
+		
+		//String byteString = jNode.findPath("profilePic").textValue();
+		//Blob blob = new javax.sql.rowset.serial.SerialBlob(byteString.getBytes());
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setString(1, jNode.findPath("facebookId").textValue());
+			pstmt.setString(2, jNode.findPath("firstName").textValue());
+			pstmt.setString(3, jNode.findPath("lastName").textValue());
+		};
+		
+		SQLTools.ResultSetProcessor rp = rs -> {
+		};
+
+		try {
+			SQLTools.doPreparedStatement(db, sql, sf, rp);
+		} catch (SQLException e) {
+			return internalServerError("Error: " + e.toString());
+		}
+
+		return ok("User created.");
 	}
 }
 

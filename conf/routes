@@ -36,3 +36,5 @@ GET		/event/select-by-location		controllers.EventController.selectEventsByLocati
 GET		/event/select-by-user			controllers.EventController.selectEventsByUser(userId:Integer)
 GET     /event/chat-select              controllers.EventController.selectEventChat(eventId:Integer)
 POST	/event/chat-insert              controllers.EventController.insertEventChat()
+
+POST	/user/create					controllers.UserController.createUser()				

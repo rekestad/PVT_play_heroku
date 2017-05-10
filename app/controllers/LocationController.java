@@ -59,6 +59,7 @@ public class LocationController extends Controller {
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setString(1, search2);
 		};
+		
 		SQLTools.ResultSetProcessor rp = rs -> {
 			result[0] = SQLTools.columnsAndRowsToJSON(rs);
 		};
