@@ -173,8 +173,8 @@ public class EventController extends Controller {
 		String sql = "INSERT INTO Chats (event_id, user_id, message) VALUES (?,?,?)";
 
 		SQLTools.StatementFiller sf = pstmt -> {
-			pstmt.setString(1, jNode.findPath("event_id").textValue());
-			pstmt.setString(2, jNode.findPath("user_id").textValue());
+			pstmt.setInt(1, jNode.findPath("event_id").asInt());
+			pstmt.setInt(2, jNode.findPath("user_id").asInt());
 			pstmt.setString(3, jNode.findPath("message").textValue());
 		};
 
