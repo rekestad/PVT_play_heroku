@@ -95,6 +95,28 @@ public class UserController extends Controller {
 
 		return ok(result[0]);
 	}
+	
+	// SELECT USER BY FACEBOOK ID
+	public Result selectUserByFacebookId(long facebookId) {
+		final JsonNode[] result = { null };
+		String sql = "SELECT * FROM Users WHERE facebook_id = ?";
+
+		SQLTools.StatementFiller sf = stmt -> {
+			stmt.setLong(1, facebookId);
+		};
+
+		SQLTools.ResultSetProcessor rp = rs -> {
+			result[0] = SQLTools.columnsAndRowsToJSON(rs);
+		};
+
+		try {
+			SQLTools.doPreparedStatement(db, sql, sf, rp);
+		} catch (SQLException e) {
+			return internalServerError("Error: " + e.toString());
+		}
+
+		return ok(result[0]);
+	}
 
 	public Result getAmountOfLikes(int id) {
 		final String[] result = { "[" };

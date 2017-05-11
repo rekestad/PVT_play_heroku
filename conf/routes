@@ -19,6 +19,7 @@ POST    /user/create                    controllers.UserController.createUser()
 GET		/user/list-all					controllers.UserController.listUsrs
 GET     /user/amountOfLikes             controllers.UserController.getAmountOfLikes(id:Integer)
 GET     /user/getUser                   controllers.UserController.getUser(id:Integer)
+GET     /user/select-by-facebook		controllers.UserController.selectUserByFacebookId(facebookId:long)
 
 #GET	/importSthlmData				controllers.SthlmDataController.importAll
 #GET	/updateSthlmData				controllers.SthlmDataController.updateAll
