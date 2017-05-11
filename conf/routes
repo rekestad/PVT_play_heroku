@@ -37,6 +37,6 @@ POST	/event/create					controllers.EventController.createEvent()
 #POST 	/event/update					controllers.EventController.updateEvent()
 #POST 	/event/cancel					controllers.EventController.cancelEvent()
 #POST	/event/attend					controllers.EventController.addEventAttendee()
-#POST	/event/chat-insert              controllers.EventController.insertEventChat()
+POST	/event/chat-insert              controllers.EventController.insertEventChat()
 
 POST	/user/create					controllers.UserController.createUser()				
