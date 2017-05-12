@@ -27,11 +27,11 @@ public class UserController extends Controller {
 		};
 		SQLTools.ResultSetProcessor rp = rs -> {
 			while (rs.next()) {
-				int id = rs.getInt("user_id");
+				long id = rs.getLong("facebook_id");
 				String fName = rs.getString("first_name");
 				String lName = rs.getString("last_name");
 
-				result[0] += "{ user_id: " + id + ", first_name: " + fName + ", last_name: " + lName + "}, \n";
+				result[0] += "{ facebook_id: " + id + ", first_name: " + fName + ", last_name: " + lName + "}, \n";
 			}
 			result[0] += "]";
 		};
@@ -77,18 +77,18 @@ public class UserController extends Controller {
 		};
 		SQLTools.ResultSetProcessor rp = rs -> {
 			while (rs.next()) {
-				int userId = rs.getInt("user_id");
+				long userId = rs.getLong("facebook_id");
 				String fname = rs.getString("first_name");
 				String lname = rs.getString("last_name");
 
-				result[0] += "{ \"user_id\":\"" + userId + "\" \"first_name\":\"" + fname + " \"last_name\":\"" + lname
+				result[0] += "{ \"facebook_id\":\"" + userId + "\" \"first_name\":\"" + fname + " \"last_name\":\"" + lname
 						+ "  }, \n";
 			}
 			result[0] += "]";
 		};
 
 		try {
-			SQLTools.doPreparedStatement(db, "SELECT * FROM Users WHERE user_id=?", sf, rp);
+			SQLTools.doPreparedStatement(db, "SELECT * FROM Users WHERE facebook_id=?", sf, rp);
 		} catch (SQLException e) {
 			return ok("couldn't load user");
 		}
