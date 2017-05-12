@@ -1,11 +1,12 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import controllers.tools.SQLTools;
 import play.db.Database;
 import play.mvc.Controller;
 import play.mvc.Result;
+
 import javax.inject.Inject;
-import com.fasterxml.jackson.databind.JsonNode;
 import java.sql.SQLException;
 
 public class EventController extends Controller {
@@ -27,7 +28,7 @@ public class EventController extends Controller {
 
 		SQLTools.StatementFiller sf = pstmt -> {
 			pstmt.setInt(1, jNode.findPath("location_id").asInt());
-			pstmt.setInt(2, jNode.findPath("user_id").asInt());
+			pstmt.setLong(2, jNode.findPath("user_id").asLong());
 			pstmt.setString(3, jNode.findPath("date").textValue());
 			pstmt.setString(4, jNode.findPath("start_time").textValue());
 			pstmt.setString(5, jNode.findPath("end_time").textValue());
@@ -37,8 +38,8 @@ public class EventController extends Controller {
 		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
 
 		SQLTools.StatementFiller sf2 = pstmt -> {
-			pstmt.setInt(1, jNode.findPath("user_id").asInt());
-			pstmt.setInt(2, jNode.findPath("user_id").asInt());
+			pstmt.setLong(1, jNode.findPath("user_id").asLong());
+			pstmt.setLong(2, jNode.findPath("user_id").asLong());
 		};
 
 		try {
@@ -100,7 +101,7 @@ public class EventController extends Controller {
 	}
 
 	// SELECT EVENT BY USER
-	public Result selectEventsByUser(int userId) {
+	public Result selectEventsByUser(long userId) {
 		final JsonNode[] result = { null };
 		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name "
 				+ "FROM Events, Locations, Location_types WHERE EXISTS "
@@ -109,7 +110,7 @@ public class EventController extends Controller {
 				+ "Locations.location_type = Location_types.type_id";
 
 		SQLTools.StatementFiller sf = stmt -> {
-			stmt.setInt(1, userId);
+			stmt.setLong(1, userId);
 		};
 
 		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
@@ -174,7 +175,7 @@ public class EventController extends Controller {
 
 		SQLTools.StatementFiller sf = pstmt -> {
 			pstmt.setInt(1, jNode.findPath("event_id").asInt());
-			pstmt.setInt(2, jNode.findPath("user_id").asInt());
+			pstmt.setLong(2, jNode.findPath("user_id").asLong());
 			pstmt.setString(3, jNode.findPath("message").textValue());
 		};
 
