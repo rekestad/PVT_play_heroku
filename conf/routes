@@ -20,6 +20,7 @@ POST    /user/create                    controllers.UserController.createUser()
 GET		/user/list-all					controllers.UserController.listUsrs
 GET     /user/getLikes                  controllers.UserController.getAmountOfLikes(id:Long)
 GET     /user/getUser                   controllers.UserController.getUser(id:Long)
+GET     /user/children                  controllers.UserController.getUserChildren(userID:Long)
 GET     /user/getUserLocations          controllers.UserController.getUserLocations(userID:Long)
 GET     /user/getUserLocationsEvents    controllers.UserController.getUserLocationsEvents(userID:Long)
 

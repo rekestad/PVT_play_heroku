@@ -76,6 +76,23 @@ public class UserController extends Controller {
 		return ok(result[0]);
 	}
 
+	// GET USERS CHILDREN
+	public Result getUserChildren(long userID){
+		final JsonNode[] result = {null};
+		String userID2 = "" + userID;
+
+		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, userID2);
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
+
+		try{
+			SQLTools.doPreparedStatement(db, "SELECT child_id, age FROM `User_children` WHERE parent_id = ?", sf, rp);
+		} catch (SQLException e){
+			return internalServerError("couldn't load children");
+		}
+
+		return ok(result[0]);
+	}
+
 	// GET USERS AMOUNT OF LIKES
 	public Result getAmountOfLikes(long fbID) {
 		final JsonNode[] result = {null};
