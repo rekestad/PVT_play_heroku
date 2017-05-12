@@ -20,6 +20,7 @@ public class UserController extends Controller {
 		this.db = db;
 	}
 
+	// LIST ALL USERS
 	public Result listUsrs() {
 		final JsonNode[] result = {null};
 
@@ -35,11 +36,12 @@ public class UserController extends Controller {
 		return ok(result[0]);
 	}
 
+	// CREATE USER
 	public Result createUser() {
 		JsonNode jNode = request().body().asJson();
 
 		SQLTools.StatementFiller sf = pstmt -> {
-			pstmt.setLong(1, jNode.findPath("facebook_id").asLong());
+			pstmt.setLong(1, jNode.findPath("user_id").asLong());
 			pstmt.setString(2, jNode.findPath("first_name").textValue());
 			pstmt.setString(3, jNode.findPath("last_name").textValue());
 		};
@@ -47,7 +49,7 @@ public class UserController extends Controller {
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
 		try {
-			SQLTools.doPreparedStatement(db, "INSERT INTO Users (facebook_id, first_name, last_name) VALUES (?,?,?)",
+			SQLTools.doPreparedStatement(db, "INSERT INTO Users (user_id, first_name, last_name) VALUES (?,?,?)",
 					sf, rp);
 		} catch (SQLException e) {
 			return internalServerError("couldn't make user: " + e);
@@ -57,6 +59,7 @@ public class UserController extends Controller {
 
 	}
 
+	// GET SELECTED USER
 	public Result getUser(long fbID) {
 		final JsonNode[] result = {null};
 		String fbIDStr = "" + fbID;
@@ -65,7 +68,7 @@ public class UserController extends Controller {
 		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
 		try {
-			SQLTools.doPreparedStatement(db, "SELECT * FROM Users WHERE facebook_id=?", sf, rp);
+			SQLTools.doPreparedStatement(db, "SELECT * FROM Users WHERE user_id=?", sf, rp);
 		} catch (SQLException e) {
 			return internalServerError("couldn't load user " + e);
 		}
@@ -73,6 +76,7 @@ public class UserController extends Controller {
 		return ok(result[0]);
 	}
 
+	// GET USERS AMOUNT OF LIKES
 	public Result getAmountOfLikes(long fbID) {
 		final JsonNode[] result = {null};
 		String id2 = "" + fbID;
@@ -85,6 +89,40 @@ public class UserController extends Controller {
 					rp);
 		} catch (SQLException e) {
 			return internalServerError("couldn't load likes: " + e);
+		}
+
+		return ok(result[0]);
+	}
+
+	// GET A USERS LOCATIONS (PROFILE VIEW)
+	public Result getUserLocations(long userID){
+		final JsonNode[] result = {null};
+		String userID2 = "" + userID;
+
+		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, userID2);
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
+
+		try{
+			SQLTools.doPreparedStatement(db, "SELECT l.location_id, l.name FROM Locations AS l, User_locations AS ul WHERE l.location_id = ul.location_id AND ul.user_id = ?", sf, rp);
+		} catch (SQLException e){
+			return internalServerError("coudn't load users locations");
+		}
+
+		return ok(result[0]);
+	}
+
+	// GET A USERS LOCATIONS EVENTS
+	public Result getUserLocationsEvents(long userID){
+		final JsonNode[] result = {null};
+		String userID2 = "" + userID;
+
+		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, userID2);
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
+
+		try{
+			SQLTools.doPreparedStatement(db, "SELECT l.location_id, l.name, e.* FROM Locations AS l, User_locations AS ul, Events AS e WHERE l.location_id = ul.location_id AND l.location_id =e.location_id AND ul.user_id = ?", sf, rp);
+		} catch (SQLException e){
+			return internalServerError("couldn't load users locations events");
 		}
 
 		return ok(result[0]);
