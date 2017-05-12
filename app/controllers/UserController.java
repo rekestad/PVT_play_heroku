@@ -21,25 +21,15 @@ public class UserController extends Controller {
 	}
 
 	public Result listUsrs() {
-		final String[] result = { "[" };
+		final JsonNode[] result = {null};
 
-		SQLTools.StatementFiller sf = stmt -> {
-		};
-		SQLTools.ResultSetProcessor rp = rs -> {
-			while (rs.next()) {
-				int id = rs.getInt("user_id");
-				String fName = rs.getString("first_name");
-				String lName = rs.getString("last_name");
-
-				result[0] += "{ user_id: " + id + ", first_name: " + fName + ", last_name: " + lName + "}, \n";
-			}
-			result[0] += "]";
-		};
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
 		try {
-			SQLTools.doPreparedStatement(db, "SELECT * FROM Users", sf, rp);
+			SQLTools.doPreparedStatement(db, "SELECT * FROM Users", stmt -> {
+			}, rp);
 		} catch (SQLException e) {
-			return ok("couldn't list users");
+			return internalServerError("couldn't list users" + e);
 		}
 
 		return ok(result[0]);
@@ -54,91 +44,47 @@ public class UserController extends Controller {
 			pstmt.setString(3, jNode.findPath("last_name").textValue());
 		};
 
-		SQLTools.ResultSetProcessor rp = rs -> {
-		};
+		SQLTools.ResultSetProcessor rp = rs -> {};
 
 		try {
 			SQLTools.doPreparedStatement(db, "INSERT INTO Users (facebook_id, first_name, last_name) VALUES (?,?,?)",
 					sf, rp);
 		} catch (SQLException e) {
-			return ok("couldn't make user");
+			return internalServerError("couldn't make user: " + e);
 		}
 
 		return ok("made user!");
 
 	}
 
-	public Result getUser(int id) {
-		final String[] result = { "[" };
-		String id2 = "" + id;
+	public Result getUser(long fbID) {
+		final JsonNode[] result = {null};
+		String fbIDStr = "" + fbID;
 
-		SQLTools.StatementFiller sf = stmt -> {
-			stmt.setString(1, id2);
-		};
-		SQLTools.ResultSetProcessor rp = rs -> {
-			while (rs.next()) {
-				int userId = rs.getInt("user_id");
-				String fname = rs.getString("first_name");
-				String lname = rs.getString("last_name");
-
-				result[0] += "{ \"user_id\":\"" + userId + "\" \"first_name\":\"" + fname + " \"last_name\":\"" + lname
-						+ "  }, \n";
-			}
-			result[0] += "]";
-		};
+		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, fbIDStr);
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
 		try {
-			SQLTools.doPreparedStatement(db, "SELECT * FROM Users WHERE user_id=?", sf, rp);
+			SQLTools.doPreparedStatement(db, "SELECT * FROM Users WHERE facebook_id=?", sf, rp);
 		} catch (SQLException e) {
-			return ok("couldn't load user");
-		}
-
-		return ok(result[0]);
-	}
-	
-	// SELECT USER BY FACEBOOK ID
-	public Result selectUserByFacebookId(long facebookId) {
-		final JsonNode[] result = { null };
-		String sql = "SELECT * FROM Users WHERE facebook_id = ?";
-
-		SQLTools.StatementFiller sf = stmt -> {
-			stmt.setLong(1, facebookId);
-		};
-
-		SQLTools.ResultSetProcessor rp = rs -> {
-			result[0] = SQLTools.columnsAndRowsToJSON(rs);
-		};
-
-		try {
-			SQLTools.doPreparedStatement(db, sql, sf, rp);
-		} catch (SQLException e) {
-			return internalServerError("Error: " + e.toString());
+			return internalServerError("couldn't load user " + e);
 		}
 
 		return ok(result[0]);
 	}
 
-	public Result getAmountOfLikes(int id) {
-		final String[] result = { "[" };
-		String id2 = "" + id;
+	public Result getAmountOfLikes(long fbID) {
+		final JsonNode[] result = {null};
+		String id2 = "" + fbID;
 
-		SQLTools.StatementFiller sf = stmt -> {
-			stmt.setString(1, id2);
-		};
-		SQLTools.ResultSetProcessor rp = rs -> {
-			while (rs.next() && !rs.isLast()) {
-				int likes = rs.getInt("amount_of_likes");
-				result[0] += "{ \"amount_of_likes\":\"" + likes + "\"  }, \n";
-			}
-			int likes = rs.getInt("amount_of_likes");
-			result[0] += "{ \"amount_of_likes\":\"" + likes + "\"  } ]";
-		};
+		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, id2);
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
 		try {
-			SQLTools.doPreparedStatement(db, "SELECT COUNT(*) AS amount_of_likes FROM User_likes WHERE user_id2=?", sf,
+			SQLTools.doPreparedStatement(db, "SELECT COUNT(*) AS likes FROM User_likes WHERE user_id2=?", sf,
 					rp);
 		} catch (SQLException e) {
-			return ok("couldn't load likes");
+			return internalServerError("couldn't load likes: " + e);
 		}
 
 		return ok(result[0]);
