@@ -81,7 +81,7 @@ public class UserController extends Controller {
 		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
 		try {
-			SQLTools.doPreparedStatement(db, "SELECT COUNT(*) AS likes FROM User_likes WHERE user_id2=?", sf,
+			SQLTools.doPreparedStatement(db, "SELECT COUNT(*) AS likes FROM User_likes WHERE liked_id=?", sf,
 					rp);
 		} catch (SQLException e) {
 			return internalServerError("couldn't load likes: " + e);
