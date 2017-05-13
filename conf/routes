@@ -24,6 +24,7 @@ GET     /user/getUserLocationsEvents    controllers.UserController.getUserLocati
 
 POST    /user/create                    controllers.UserController.createUser()
 POST    /user/createChild               controllers.UserController.createChild()
+POST    /user/location                  controllers.UserController.createFavoriteLocation()
 
 #GET	/importSthlmData				controllers.SthlmDataController.importAll
 #GET	/updateSthlmData				controllers.SthlmDataController.updateAll

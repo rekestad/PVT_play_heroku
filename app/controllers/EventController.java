@@ -150,7 +150,7 @@ public class EventController extends Controller {
 	public Result selectEventChat(int eventId) {
 		final JsonNode[] result = { null };
 
-		String sql = "SELECT CONCAT(Users.first_name, ' ', Users.last_name) AS name, message, date_format(date_time, '%Y-%m-%d kl %H:%i') date_time FROM Chats, Users WHERE Chats.event_id = ? AND Chats.user_id = Users.user_id ORDER BY Chats.date_time";
+		String sql = "SELECT CONCAT(Users.first_name, ' ', Users.last_name) AS name, message, date_format(date_time, '%Y-%m-%d kl %H:%i') AS date_time FROM Chats, Users WHERE Chats.event_id = ? AND Chats.user_id = Users.user_id ORDER BY Chats.date_time";
 
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setInt(1, eventId);

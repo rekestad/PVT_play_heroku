@@ -79,6 +79,26 @@ public class UserController extends Controller {
 		return ok("made child");
 	}
 
+	// CREATE FAVORITE LOCATION
+	public Result createFavoriteLocation(){
+		JsonNode jNode = request().body().asJson();
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setLong(1, jNode.findPath("user_id").asLong());
+			pstmt.setInt(2, jNode.findPath("location_id").asInt());
+		};
+
+		SQLTools.ResultSetProcessor rp = rs -> {};
+
+		try{
+			SQLTools.doPreparedStatement(db, "INSERT INTO User_locations VALUES (?,?)", sf, rp);
+		} catch (SQLException e){
+			return internalServerError("couldn't load favorite location" + e);
+		}
+
+		return ok("made favorite location");
+	}
+
 	// GET SELECTED USER
 	public Result getUser(long fbID) {
 		final JsonNode[] result = {null};
@@ -148,7 +168,7 @@ public class UserController extends Controller {
 		return ok(result[0]);
 	}
 
-	// GET A USERS LOCATIONS EVENTS
+	// GET A USERS LOCATIONS EVENTS (HOME VIEW)
 	public Result getUserLocationsEvents(long userID){
 		final JsonNode[] result = {null};
 		String userID2 = "" + userID;
