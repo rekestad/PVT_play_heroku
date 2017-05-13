@@ -14,8 +14,6 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 GET		/hello							controllers.HomeController.helloThere
 
-POST    /user/create                    controllers.UserController.createUser()
-
 
 GET		/user/list-all					controllers.UserController.listUsrs
 GET     /user/getLikes                  controllers.UserController.getAmountOfLikes(id:Long)
@@ -23,6 +21,9 @@ GET     /user/getUser                   controllers.UserController.getUser(id:Lo
 GET     /user/children                  controllers.UserController.getUserChildren(userID:Long)
 GET     /user/getUserLocations          controllers.UserController.getUserLocations(userID:Long)
 GET     /user/getUserLocationsEvents    controllers.UserController.getUserLocationsEvents(userID:Long)
+
+POST    /user/create                    controllers.UserController.createUser()
+POST    /user/createChild               controllers.UserController.createChild()
 
 #GET	/importSthlmData				controllers.SthlmDataController.importAll
 #GET	/updateSthlmData				controllers.SthlmDataController.updateAll

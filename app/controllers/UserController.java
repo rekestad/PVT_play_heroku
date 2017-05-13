@@ -59,6 +59,26 @@ public class UserController extends Controller {
 
 	}
 
+	// CREATE CHILD
+	public Result createChild(){
+		JsonNode jNode = request().body().asJson();
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setLong(1, jNode.findPath("parent_id").asLong());
+			pstmt.setInt(2, jNode.findPath("age").asInt());
+		};
+
+		SQLTools.ResultSetProcessor rp = rs -> {};
+
+		try{
+			SQLTools.doPreparedStatement(db, "INSERT INTO User_children (parent_id, age) VALUES (?,?)", sf, rp);
+		} catch (SQLException e){
+			return internalServerError("couldn't make child: " + e);
+		}
+
+		return ok("made child");
+	}
+
 	// GET SELECTED USER
 	public Result getUser(long fbID) {
 		final JsonNode[] result = {null};
