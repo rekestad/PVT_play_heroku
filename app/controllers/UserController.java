@@ -99,6 +99,26 @@ public class UserController extends Controller {
 		return ok("made favorite location");
 	}
 
+	// DELETE FAVORITE LOCATION
+	public Result deleteFavoriteLocation(){
+		JsonNode jNode = request().body().asJson();
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setLong(1, jNode.findPath("user_id").asLong());
+			pstmt.setLong(2, jNode.findPath("location_id").asLong());
+		};
+
+		SQLTools.ResultSetProcessor rp = rs -> {};
+
+		try{
+			SQLTools.doPreparedStatement(db, "DELETE FROM User_locations WHERE user_id = ? AND location_id = ?", sf, rp);
+		} catch(SQLException e){
+			return internalServerError("couldn't delete like" + e);
+		}
+
+		return ok("deleted like");
+	}
+
 	// CREATE LIKE
 	public Result createLike(){
 		JsonNode jNode = request().body().asJson();
@@ -122,8 +142,6 @@ public class UserController extends Controller {
 	// DELETE LIKE
 	public Result deleteLike(){
 		JsonNode jNode = request().body().asJson();
-		System.out.println("test hej");
-		System.out.println(jNode);
 
 		SQLTools.StatementFiller sf = pstmt -> {
 			pstmt.setLong(1, jNode.findPath("liker_id").asLong());
