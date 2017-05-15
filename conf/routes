@@ -24,6 +24,7 @@ GET     /user/getUserLocationsEvents    controllers.UserController.getUserLocati
 
 POST    /user/create                    controllers.UserController.createUser()
 POST    /user/createChild               controllers.UserController.createChild()
+POST    /user/deleteChild               controllers.UserController.deleteChild()
 POST    /user/location                  controllers.UserController.createFavoriteLocation()
 POST    /user/like                      controllers.UserController.createLike()
 POST  /user/unlike                    controllers.UserController.deleteLike()
