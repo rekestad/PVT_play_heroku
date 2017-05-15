@@ -193,21 +193,21 @@ public class UserController extends Controller {
 		return ok(result[0]);
 	}
 
-	// DELETE LIKE
+	// DELETE CHILD
 	public Result deleteChild(){
 		JsonNode jNode = request().body().asJson();
 		System.out.println("test deleteChild");
 		System.out.println(jNode);
 
 		SQLTools.StatementFiller sf = pstmt -> {
-			pstmt.setLong(1, jNode.findPath("parent_id").asLong());
-			pstmt.setLong(2, jNode.findPath("child_id").asLong());
+			pstmt.setLong(1, jNode.findPath("child_id").asLong());
+			pstmt.setLong(2, jNode.findPath("parent_id").asLong());
 		};
 
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
 		try{
-			SQLTools.doPreparedStatement(db, "DELETE FROM User_children WHERE parent_id = ? AND child_id = ?", sf, rp);
+			SQLTools.doPreparedStatement(db, "DELETE FROM User_children WHERE child_id = ? AND parent_id = ?", sf, rp);
 		} catch(SQLException e){
 			return internalServerError("couldn't delete child" + e);
 		}
