@@ -25,6 +25,9 @@ GET     /user/getUserLocationsEvents    controllers.UserController.getUserLocati
 POST    /user/create                    controllers.UserController.createUser()
 POST    /user/createChild               controllers.UserController.createChild()
 POST    /user/location                  controllers.UserController.createFavoriteLocation()
+POST    /user/like                      controllers.UserController.createLike()
+
+#DELETE  /user/unlike                    controllers.UserController.deleteLike(userID:Long)
 
 #GET	/importSthlmData				controllers.SthlmDataController.importAll
 #GET	/updateSthlmData				controllers.SthlmDataController.updateAll
@@ -42,7 +45,7 @@ GET     /event/chat-select              controllers.EventController.selectEventC
 POST	/event/create					controllers.EventController.createEvent()
 #POST 	/event/update					controllers.EventController.updateEvent()
 #POST 	/event/cancel					controllers.EventController.cancelEvent()
-#POST	/event/attend					controllers.EventController.addEventAttendee()
+POST	/event/attend					controllers.EventController.addEventAttendee()
 POST	/event/chat-insert              controllers.EventController.insertEventChat()
 
 POST	/user/create					controllers.UserController.createUser()				

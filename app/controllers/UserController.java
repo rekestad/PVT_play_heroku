@@ -99,6 +99,46 @@ public class UserController extends Controller {
 		return ok("made favorite location");
 	}
 
+	// CREATE LIKE
+	public Result createLike(){
+		JsonNode jNode = request().body().asJson();
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setLong(1, jNode.findPath("liker_id").asLong());
+			pstmt.setLong(2, jNode.findPath("liked_id").asLong());
+		};
+
+		SQLTools.ResultSetProcessor rp = rs -> {};
+
+		try{
+			SQLTools.doPreparedStatement(db, "INSERT INTO User_likes VALUES (?,?)", sf, rp);
+		} catch (SQLException e){
+			return internalServerError("couldn't load like" + e);
+		}
+
+		return ok("made like");
+	}
+
+	// DELETE LIKE
+	/*public Result deleteLike(){
+		JsonNode jNode = request().body().asJson();
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setLong(1, jNode.findPath("liker_id").asLong());
+			pstmt.setLong(2, jNode.findPath("liked_id").asLong());
+		};
+
+		SQLTools.ResultSetProcessor rp = rs -> {};
+
+		try{
+			SQLTools.doPreparedStatement(db, "DELETE FROM User_likes WHERE liker_id = ? AND liked_id = ?", sf, rp);
+		} catch(SQLException e){
+			return internalServerError("couldn't delete like" + e);
+		}
+
+		return ok("deleted like");
+	}*/
+
 	// GET SELECTED USER
 	public Result getUser(long fbID) {
 		final JsonNode[] result = {null};

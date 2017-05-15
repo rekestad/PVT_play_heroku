@@ -52,6 +52,26 @@ public class EventController extends Controller {
 		return ok("Event created and user attended.");
 	}
 
+	// CREATE EVENT ATTENDEE
+	public Result addEventAttendee(){
+		JsonNode jNode = request().body().asJson();
+		String sql = "INSERT INTO Event_attendees VALUES (?,?,?)";
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setInt(1, jNode.findPath("event_id").asInt());
+			pstmt.setLong(2, jNode.findPath("user_id").asLong());
+			pstmt.setString(3, jNode.findPath("attending_children_ids").textValue());
+		};
+
+		try {
+			SQLTools.doPreparedStatement(db, sql, sf, nullRp);
+		} catch (SQLException e) {
+			return internalServerError("Error: " + e.toString());
+		}
+
+		return ok("User attendee created.");
+	}
+
 	// SELECT EVENT
 	public Result selectEvent(int eventId) {
 		final JsonNode[] result = { null };
