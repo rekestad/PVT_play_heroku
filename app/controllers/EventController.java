@@ -211,12 +211,12 @@ public class EventController extends Controller {
 	// CREATE ATTENDEE
 	public Result addAttendee() {
 		JsonNode jNode = request().body().asJson();
-		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
+		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?, ?)";
 
 		SQLTools.StatementFiller sf2 = pstmt -> {
 			pstmt.setInt(1, jNode.findPath("event_id").asInt());
 			pstmt.setInt(2, jNode.findPath("user_id").asInt());
-			//pstmt.setString(3, jNode.findPath("attending_children_ids").textValue());
+			pstmt.setString(3, jNode.findPath("attending_children_ids").textValue());
 		};
 
 		try {
