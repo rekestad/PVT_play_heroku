@@ -27,7 +27,7 @@ POST    /user/createChild               controllers.UserController.createChild()
 POST    /user/deleteChild               controllers.UserController.deleteChild()
 POST    /user/location                  controllers.UserController.createFavoriteLocation()
 POST    /user/like                      controllers.UserController.createLike()
-POST  /user/unlike                    controllers.UserController.deleteLike()
+POST    /user/unlike                    controllers.UserController.deleteLike()
 
 #GET	/importSthlmData				controllers.SthlmDataController.importAll
 #GET	/updateSthlmData				controllers.SthlmDataController.updateAll
@@ -42,11 +42,10 @@ GET		/event/select-by-location		controllers.EventController.selectEventsByLocati
 GET		/event/select-by-user			controllers.EventController.selectEventsByUser(userId:Long)
 GET     /event/chat-select              controllers.EventController.selectEventChat(eventId:Integer)
 
-POST    /event/addAttendee              controllers.EventController.addAttendee()
+#POST    /event/addAttendee              controllers.EventController.addAttendee()
 POST	/event/create					controllers.EventController.createEvent()
 #POST 	/event/update					controllers.EventController.updateEvent()
 #POST 	/event/cancel					controllers.EventController.cancelEvent()
 POST	/event/attend					controllers.EventController.addEventAttendee()
+POST    /event/unattend                 controllers.EventController.deleteEventAttendee()
 POST	/event/chat-insert              controllers.EventController.insertEventChat()
-
-POST	/user/create					controllers.UserController.createUser()				
