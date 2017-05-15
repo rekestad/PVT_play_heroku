@@ -44,10 +44,11 @@ GET		/event/select-by-location		controllers.EventController.selectEventsByLocati
 GET		/event/select-by-user			controllers.EventController.selectEventsByUser(userId:Long)
 GET     /event/chat-select              controllers.EventController.selectEventChat(eventId:Integer)
 
-#POST    /event/addAttendee              controllers.EventController.addAttendee()
 POST	/event/create					controllers.EventController.createEvent()
-#POST 	/event/update					controllers.EventController.updateEvent()
-#POST 	/event/cancel					controllers.EventController.cancelEvent()
+POST 	/event/update					controllers.EventController.updateEvent()
+POST 	/event/cancel					controllers.EventController.cancelEvent()
 POST	/event/attend					controllers.EventController.addEventAttendee()
 POST    /event/unattend                 controllers.EventController.deleteEventAttendee()
 POST	/event/chat-insert              controllers.EventController.insertEventChat()
+
+GET     /securityGetTest                controllers.EventController.securityTest()
