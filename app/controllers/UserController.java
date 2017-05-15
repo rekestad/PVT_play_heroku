@@ -120,8 +120,10 @@ public class UserController extends Controller {
 	}
 
 	// DELETE LIKE
-	/*public Result deleteLike(){
+	public Result deleteLike(){
 		JsonNode jNode = request().body().asJson();
+		System.out.println("test hej");
+		System.out.println(jNode);
 
 		SQLTools.StatementFiller sf = pstmt -> {
 			pstmt.setLong(1, jNode.findPath("liker_id").asLong());
@@ -137,7 +139,7 @@ public class UserController extends Controller {
 		}
 
 		return ok("deleted like");
-	}*/
+	}
 
 	// GET SELECTED USER
 	public Result getUser(long fbID) {

@@ -26,8 +26,7 @@ POST    /user/create                    controllers.UserController.createUser()
 POST    /user/createChild               controllers.UserController.createChild()
 POST    /user/location                  controllers.UserController.createFavoriteLocation()
 POST    /user/like                      controllers.UserController.createLike()
-
-#DELETE  /user/unlike                    controllers.UserController.deleteLike(userID:Long)
+POST  /user/unlike                    controllers.UserController.deleteLike()
 
 #GET	/importSthlmData				controllers.SthlmDataController.importAll
 #GET	/updateSthlmData				controllers.SthlmDataController.updateAll
