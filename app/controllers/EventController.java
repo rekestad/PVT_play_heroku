@@ -196,7 +196,7 @@ public class EventController extends Controller {
 		SQLTools.StatementFiller sf2 = pstmt -> {
 			pstmt.setInt(1, jNode.findPath("event_id").asInt());
 			pstmt.setInt(2, jNode.findPath("user_id").asInt());
-			//pstmt.setString(3, jNode.findPath("attending_children_ids").textValue());
+			pstmt.setString(3, jNode.findPath("attending_children_ids").textValue());
 		};
 
 		try {
