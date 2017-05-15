@@ -266,4 +266,21 @@ public class UserController extends Controller {
 
 		return ok(result[0]);
 	}
+
+	// GET ALL PROFILE INFO (väldigt ful och osmidig)
+	public Result getAllProfileInfo(long userID){
+		final JsonNode[] result = {null};
+		String userID2 = "" + userID;
+
+		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, userID2);
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
+
+		try{
+			SQLTools.doPreparedStatement(db, "SELECT u.first_name, u.last_name, uc.child_id, uc.age, e.event_id, e.date, e.start_time, e.end_time, e.description, ul.location_id, uli.liked_id FROM Users AS u, User_children AS uc, Events AS e, User_locations AS ul, User_likes AS uli WHERE u.user_id = uc.parent_id AND u.user_id = e.user_id AND u.user_id = ul.user_id AND u.user_id = uli.liker_id AND u.user_id = ?", sf, rp);
+		} catch (SQLException e){
+			return internalServerError("couldn't load everything");
+		}
+
+		return ok(result[0]);
+	}
 }
