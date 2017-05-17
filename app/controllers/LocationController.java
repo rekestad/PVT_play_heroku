@@ -52,7 +52,7 @@ public class LocationController extends Controller {
 		return ok(result[0]);
 	}
 
-	public Result getLocation(int id) {
+	public Result getLocation(int locationId) {
 		final JsonNode[] result = {null};
 		String sql = "SELECT l.location_id, lp.type_name, l.name, l.name_short, l.position_x, l.position_y, " +
 				"e.event_id, e.date, e.start_time, e.end_time, e.description, " +
@@ -61,7 +61,7 @@ public class LocationController extends Controller {
 				"WHERE l.location_id = ? AND e.location_id = l.location_id AND l.location_type = lp.type_id";
 
 		SQLTools.StatementFiller sf = stmt -> {
-			stmt.setInt(1, id);
+			stmt.setInt(1, locationId);
 		};
 
 		SQLTools.ResultSetProcessor rp = rs -> {
