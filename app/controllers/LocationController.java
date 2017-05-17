@@ -7,8 +7,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.inject.Inject;
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.SQLException;
 
 public class LocationController extends Controller {
 	private Database db;
@@ -102,7 +101,7 @@ public class LocationController extends Controller {
 
 	public Result searchLocations(String search) {
 		final JsonNode[] result = {null};
-		search += "%";
+		//search += "%";
 		final String search2 = search;
 
 		SQLTools.StatementFiller sf = stmt -> {
@@ -114,7 +113,7 @@ public class LocationController extends Controller {
 		};
 
 		try {
-			SQLTools.doPreparedStatement(db, "SELECT * FROM Locations WHERE name LIKE ?", sf, rp);
+			SQLTools.doPreparedStatement(db, "SELECT * FROM Locations WHERE name REGEXP ?", sf, rp);
 		} catch (SQLException e) {
 			return internalServerError("couldn't load search");
 		}
