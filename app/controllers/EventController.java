@@ -233,9 +233,9 @@ public class EventController extends Controller {
 	}
 
 	// SELECT ALL EVENTS CREATED BY USER
-	public Result getEventsCreatedByUser(long userID){
+	public Result selectEventsCreatedByUser(long userId){
 		final JsonNode[] result = {null};
-		String userID2 = "" + userID;
+		String userID = "" + userId;
 
 		String sql = "SELECT l.name_short, e.event_id, e.date, e.start_time, e.end_time, e.description, lt.type_name\n" +
 				"FROM Users AS u, Events AS e, Locations AS l, Location_types AS lt \n" +
@@ -244,7 +244,7 @@ public class EventController extends Controller {
 				"AND l.location_type = lt.type_id\n" +
 				"AND u.user_id = ?";
 
-		SQLTools.StatementFiller sf = stmt -> {stmt.setString(1, userID2);};
+		SQLTools.StatementFiller sf = stmt -> {stmt.setString(1, userID);};
 
 		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
