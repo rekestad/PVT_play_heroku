@@ -267,20 +267,43 @@ public class UserController extends Controller {
 		return ok(result[0]);
 	}
 
-	// GET ALL PROFILE INFO (väldigt ful och osmidig)
+	// GET ALL PROFILE INFO (funkar ej)
 	public Result getAllProfileInfo(long userID){
 		final JsonNode[] result = {null};
 		String userID2 = "" + userID;
 
-		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, userID2);
+		String sqlUser = "SELECT first_name, last_name FROM Users WHERE user_id = ?";
+		String sqlChildren = "SELECT child_id, age FROM `User_children` WHERE parent_id = ?";
+		String sqlEvent = "SELECT l.name_short, e.event_id, e.date, e.start_time, e.end_time, e.description, lt.type_name\n" +
+				"FROM Users AS u, Events AS e, Locations AS l, Location_types AS lt \n" +
+				"WHERE u.user_id = e.user_id\n" +
+				"AND e.location_id = l.location_id\n" +
+				"AND l.location_type = lt.type_id\n" +
+				"AND u.user_id = ?";
+		String sqlLocations = "SELECT l.location_id, l.name_short FROM Locations AS l, User_locations AS ul WHERE l.location_id = ul.location_id AND ul.user_id = ?";
+		String sqlLikes = "SELECT COUNT(*) AS likes FROM User_likes WHERE liked_id=?";
+
+		SQLTools.StatementFiller sf1 = stmt -> stmt.setString(1, userID2);
+		SQLTools.StatementFiller sf2 = stmt -> stmt.setString(1, userID2);
+		SQLTools.StatementFiller sf3 = stmt -> stmt.setString(1, userID2);
+		SQLTools.StatementFiller sf4 = stmt -> stmt.setString(1, userID2);
+		SQLTools.StatementFiller sf5 = stmt -> stmt.setString(1, userID2);
+
+
 		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
 		try{
-			SQLTools.doPreparedStatement(db, "SELECT u.first_name, u.last_name, uc.child_id, uc.age, e.event_id, e.date, e.start_time, e.end_time, e.description, ul.location_id, uli.liked_id FROM Users AS u, User_children AS uc, Events AS e, User_locations AS ul, User_likes AS uli WHERE u.user_id = uc.parent_id AND u.user_id = e.user_id AND u.user_id = ul.user_id AND u.user_id = uli.liker_id AND u.user_id = ?", sf, rp);
+			SQLTools.doPreparedStatement(db, sqlUser, sf1, rp);
+			SQLTools.doPreparedStatement(db, sqlChildren, sf2, rp);
+			SQLTools.doPreparedStatement(db, sqlEvent, sf3, rp);
+			SQLTools.doPreparedStatement(db, sqlLocations, sf4, rp);
+			SQLTools.doPreparedStatement(db, sqlLikes, sf5, rp);
+
 		} catch (SQLException e){
 			return internalServerError("couldn't load everything");
 		}
 
 		return ok(result[0]);
 	}
+
 }
