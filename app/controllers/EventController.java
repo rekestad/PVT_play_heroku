@@ -232,6 +232,31 @@ public class EventController extends Controller {
 		return ok(result[0]);
 	}
 
+	// SELECT ALL EVENTS CREATED BY USER
+	public Result getEventsCreatedByUser(long userID){
+		final JsonNode[] result = {null};
+		String userID2 = "" + userID;
+
+		String sql = "SELECT l.name_short, e.event_id, e.date, e.start_time, e.end_time, e.description, lt.type_name\n" +
+				"FROM Users AS u, Events AS e, Locations AS l, Location_types AS lt \n" +
+				"WHERE u.user_id = e.user_id\n" +
+				"AND e.location_id = l.location_id\n" +
+				"AND l.location_type = lt.type_id\n" +
+				"AND u.user_id = ?";
+
+		SQLTools.StatementFiller sf = stmt -> {stmt.setString(1, userID2);};
+
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
+
+		try{
+			SQLTools.doPreparedStatement(db, sql, sf, rp);
+		} catch (SQLException e){
+			return internalServerError(e.toString());
+		}
+
+		return ok(result[0]);
+	}
+
 	// SELECT EVENT CHAT
 	public Result selectEventChat(int eventId) {
 		final JsonNode[] result = { null };
