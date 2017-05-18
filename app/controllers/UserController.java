@@ -193,6 +193,23 @@ public class UserController extends Controller {
 		return ok(result[0]);
 	}
 
+	// GET CHILD AGE
+	public Result getChildAge(int childID){
+		final JsonNode[] result = {null};
+		String childID2 = "" + childID;
+
+		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, childID2);
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
+
+		try{
+			SQLTools.doPreparedStatement(db, "SELECT age FROM `User_children` WHERE child_id = ?", sf, rp);
+		} catch (SQLException e){
+			return internalServerError("couldn't load age");
+		}
+
+		return ok(result[0]);
+	}
+
 	// DELETE CHILD
 	public Result deleteChild(){
 		JsonNode jNode = request().body().asJson();
