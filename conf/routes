@@ -49,6 +49,7 @@ GET     /event/chat-select              controllers.EventController.selectEventC
 POST	/event/create					controllers.EventController.createEvent()
 POST 	/event/update					controllers.EventController.updateEvent()
 POST 	/event/cancel					controllers.EventController.cancelEvent()
+POST 	/event/add-event-owner			controllers.EventController.addEventOwner()
 POST	/event/attend					controllers.EventController.addEventAttendee()
 POST    /event/unattend                 controllers.EventController.deleteEventAttendee()
 POST	/event/chat-insert              controllers.EventController.insertEventChat()
