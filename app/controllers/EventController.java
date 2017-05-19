@@ -192,7 +192,7 @@ public class EventController extends Controller {
 	}
 	public Result addEventOwner(){
 		JsonNode jNode = request().body().asJson();
-		String sql = "INSERT INTO Event_attendees VALUES (1,?,?)";
+		String sql = "INSERT INTO Event_attendees VALUES (NULL,?,?)";
 
 		SQLTools.StatementFiller sf = pstmt -> {
 
