@@ -130,7 +130,7 @@ public class EventController extends Controller {
 		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name "
 				+ "FROM Events, Locations, Location_types WHERE "
 				+ "Locations.location_id = ? AND Events.location_id = Locations.location_id AND "
-				+ "Locations.location_type = Location_types.type_id";
+				+ "Locations.location_type = Location_types.type_id AND date >= CURDATE() AND end_time <= CURTIME()";
 
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setInt(1, locationId);
