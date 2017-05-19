@@ -90,7 +90,7 @@ public class LocationController extends Controller {
 
     // CHECK IF LOCATION IS USER FAVOURITE
     public Result checkIfFavourite(long userId, int locationId) {
-        
+
         String sql = "SELECT IF(EXISTS(SELECT * FROM User_locations WHERE user_id = ? AND location_id = ?),'TRUE','FALSE') AS result";
 
         SQLTools.StatementFiller sf = stmt -> {
@@ -100,7 +100,8 @@ public class LocationController extends Controller {
         };
 
         SQLTools.ResultSetProcessor rp = rs -> {
-            setReturnData(rs.getString("result"));
+            while(rs.next())
+                setReturnData(rs.getString("result"));
         };
 
         try {
