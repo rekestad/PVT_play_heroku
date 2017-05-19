@@ -192,12 +192,12 @@ public class EventController extends Controller {
 	}
 	public Result addEventOwner(){
 		JsonNode jNode = request().body().asJson();
-		String sql = "INSERT INTO Event_attendees VALUES (NULL,?,?)";
+		String sql = "INSERT INTO Event_attendees VALUES (?,?,?)";
 
 		SQLTools.StatementFiller sf = pstmt -> {
-
-			pstmt.setLong(1, jNode.findPath("user_id").asLong());
-			pstmt.setString(2, jNode.findPath("attending_children_ids").textValue());
+			pstmt.setInt(1, jNode.findPath("event_id").asInt());
+			pstmt.setLong(2, jNode.findPath("user_id").asLong());
+			pstmt.setString(3, jNode.findPath("attending_children_ids").textValue());
 		};
 
 		try {
