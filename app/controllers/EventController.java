@@ -130,10 +130,13 @@ public class EventController extends Controller {
 	// SELECT EVENT BY LOCATION
 	public Result selectEventsByLocation(int locationId) {
 		final JsonNode[] result = { null };
-		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name "
-				+ "FROM Events, Locations, Location_types WHERE "
-				+ "Locations.location_id = ? AND Events.location_id = Locations.location_id AND "
-				+ "Locations.location_type = Location_types.type_id";
+		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name " +
+				"FROM Events, Locations, Location_types " +
+				"WHERE Locations.location_id = ? " +
+				"AND Events.location_id = Locations.location_id " +
+				"AND Locations.location_type = Location_types.type_id " +
+				"AND CONCAT(date, ' ', end_time) > NOW() " +
+				"ORDER BY Events.date, Events.start_time";
 
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setInt(1, locationId);
@@ -193,7 +196,7 @@ public class EventController extends Controller {
 
 		return ok("User attendee created.");
 	}
-
+	
 
 	// DELETE ATTENDEE
 	public Result deleteEventAttendee(){
