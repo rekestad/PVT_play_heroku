@@ -190,6 +190,25 @@ public class EventController extends Controller {
 
 		return ok("User attendee created.");
 	}
+	public Result addEventOwner(){
+		JsonNode jNode = request().body().asJson();
+		String sql = "INSERT INTO Event_attendees VALUES (NULL,?,?)";
+
+		SQLTools.StatementFiller sf = pstmt -> {
+
+			pstmt.setLong(1, jNode.findPath("user_id").asLong());
+			pstmt.setString(2, jNode.findPath("attending_children_ids").textValue());
+		};
+
+		try {
+			SQLTools.doPreparedStatement(db, sql, sf, nullRp);
+		} catch (SQLException e) {
+			return internalServerError("Error: " + e.toString());
+		}
+
+		return ok("User attendee created.");
+	}
+
 
 	// DELETE ATTENDEE
 	public Result deleteEventAttendee(){
