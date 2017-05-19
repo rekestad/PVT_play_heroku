@@ -11,6 +11,7 @@ import java.sql.SQLException;
 
 public class LocationController extends Controller {
     private Database db;
+    private String returnData;
 
     @Inject
     public LocationController(Database db) {
@@ -30,6 +31,17 @@ public class LocationController extends Controller {
         }
 
         return ok(result[0]);
+    }
+
+    public String getReturnData() {
+        String returnThis = returnData;
+        returnData = "";
+
+        return returnThis;
+    }
+
+    public void setReturnData(String returnData) {
+        this.returnData = returnData;
     }
 
     public Result getLocation(int locationId) {
@@ -78,8 +90,8 @@ public class LocationController extends Controller {
 
     // CHECK IF LOCATION IS USER FAVOURITE
     public Result checkIfFavourite(long userId, int locationId) {
-        final JsonNode[] result = {null};
-        String sql = "SELECT IF(EXISTS(SELECT * FROM User_locations WHERE user_id = ? AND location_id = ?),1,0) AS result";
+        
+        String sql = "SELECT IF(EXISTS(SELECT * FROM User_locations WHERE user_id = ? AND location_id = ?),'TRUE','FALSE') AS result";
 
         SQLTools.StatementFiller sf = stmt -> {
             stmt.setLong(1, userId);
@@ -88,7 +100,7 @@ public class LocationController extends Controller {
         };
 
         SQLTools.ResultSetProcessor rp = rs -> {
-            result[0] = SQLTools.columnsAndRowsToJSON(rs);
+            setReturnData(rs.getString("result"));
         };
 
         try {
@@ -97,7 +109,7 @@ public class LocationController extends Controller {
             return internalServerError("Error: " + e.toString());
         }
 
-        return ok(result[0]);
+        return ok(getReturnData());
     }
 }
 
