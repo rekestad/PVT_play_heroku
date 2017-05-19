@@ -36,12 +36,12 @@ public class EventController extends Controller {
 			pstmt.setString(5, jNode.findPath("end_time").textValue());
 			pstmt.setString(6, jNode.findPath("description").textValue());
 		};
-		
+
 		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
 
 		SQLTools.StatementFiller sf2 = pstmt -> {
 			pstmt.setLong(1, jNode.findPath("user_id").asLong());
-			pstmt.setLong(2, jNode.findPath("user_id").asLong());
+			pstmt.setString(2, jNode.findPath("description").textValue());
 		};
 
 		try {
@@ -190,6 +190,25 @@ public class EventController extends Controller {
 
 		return ok("User attendee created.");
 	}
+	public Result addEventOwner(){
+		JsonNode jNode = request().body().asJson();
+		String sql = "INSERT INTO Event_attendees VALUES (?,?,?)";
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setInt(1, jNode.findPath("event_id").asInt());
+			pstmt.setLong(2, jNode.findPath("user_id").asLong());
+			pstmt.setString(3, jNode.findPath("attending_children_ids").textValue());
+		};
+
+		try {
+			SQLTools.doPreparedStatement(db, sql, sf, nullRp);
+		} catch (SQLException e) {
+			return internalServerError("Error: " + e.toString());
+		}
+
+		return ok("User attendee created.");
+	}
+
 
 	// DELETE ATTENDEE
 	public Result deleteEventAttendee(){

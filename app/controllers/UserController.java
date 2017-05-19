@@ -193,6 +193,23 @@ public class UserController extends Controller {
 		return ok(result[0]);
 	}
 
+	// GET CHILD AGE
+	public Result getChildAge(int childID){
+		final JsonNode[] result = {null};
+		String childID2 = "" + childID;
+
+		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, childID2);
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
+
+		try{
+			SQLTools.doPreparedStatement(db, "SELECT age FROM `User_children` WHERE child_id = ?", sf, rp);
+		} catch (SQLException e){
+			return internalServerError("couldn't load age");
+		}
+
+		return ok(result[0]);
+	}
+
 	// DELETE CHILD
 	public Result deleteChild(){
 		JsonNode jNode = request().body().asJson();
@@ -233,6 +250,25 @@ public class UserController extends Controller {
 		return ok(result[0]);
 	}
 
+	// GET LIKED USERS
+	public Result getLikedUsers(long userID){
+		final JsonNode[] result = {null};
+		String userID2 = ""+userID;
+
+		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, userID2);
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
+
+		try {
+			SQLTools.doPreparedStatement(db, "SELECT liked_id FROM `User_likes` WHERE liker_id = ?", sf,
+					rp);
+		} catch (SQLException e) {
+			return internalServerError("couldn't load likes: " + e);
+		}
+
+		return ok(result[0]);
+
+	}
+
 	// GET A USERS LOCATIONS (PROFILE VIEW)
 	public Result getUserLocations(long userID){
 		final JsonNode[] result = {null};
@@ -259,7 +295,7 @@ public class UserController extends Controller {
 		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
 		try{
-			SQLTools.doPreparedStatement(db, "SELECT l.location_id, l.name, e.* FROM Locations AS l, User_locations AS ul, Events AS e WHERE l.location_id = ul.location_id AND l.location_id =e.location_id AND ul.user_id = ?", sf, rp);
+			SQLTools.doPreparedStatement(db, "SELECT l.location_id, l.name, lt.type_name, e.* FROM Locations AS l, User_locations AS ul, Events AS e, Location_types AS lt WHERE l.location_id = ul.location_id AND l.location_id =e.location_id AND l.location_type = lt.type_id AND ul.user_id = ?", sf, rp);
 		} catch (SQLException e){
 			return internalServerError("couldn't load users locations events");
 		}
