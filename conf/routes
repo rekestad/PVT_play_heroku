@@ -17,6 +17,7 @@ GET		/hello							controllers.HomeController.helloThere
 
 GET		/user/list-all					controllers.UserController.listUsrs
 GET     /user/getLikes                  controllers.UserController.getAmountOfLikes(id:Long)
+GET     /user/getLikedUsers             controllers.UserController.getLikedUsers(userID:Long)
 GET     /user/getUser                   controllers.UserController.getUser(id:Long)
 GET     /user/children                  controllers.UserController.getUserChildren(userID:Long)
 GET     /user/getChildAge               controllers.UserController.getChildAge(childID:Integer)

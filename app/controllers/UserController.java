@@ -250,6 +250,25 @@ public class UserController extends Controller {
 		return ok(result[0]);
 	}
 
+	// GET LIKED USERS
+	public Result getLikedUsers(long userID){
+		final JsonNode[] result = {null};
+		String userID2 = ""+userID;
+
+		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, userID2);
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
+
+		try {
+			SQLTools.doPreparedStatement(db, "SELECT liked_id FROM `User_likes` WHERE liker_id = ?", sf,
+					rp);
+		} catch (SQLException e) {
+			return internalServerError("couldn't load likes: " + e);
+		}
+
+		return ok(result[0]);
+
+	}
+
 	// GET A USERS LOCATIONS (PROFILE VIEW)
 	public Result getUserLocations(long userID){
 		final JsonNode[] result = {null};
