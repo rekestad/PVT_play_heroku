@@ -23,8 +23,6 @@ public class EventController extends Controller {
 		};
 	}
 
-
-
 	// CREATE EVENT
 	public Result createEvent() {
 		JsonNode jNode = request().body().asJson();
@@ -38,7 +36,6 @@ public class EventController extends Controller {
 			pstmt.setString(5, jNode.findPath("end_time").textValue());
 			pstmt.setString(6, jNode.findPath("description").textValue());
 		};
-
 
 		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
 
@@ -149,7 +146,7 @@ public class EventController extends Controller {
 	// SELECT EVENT BY LOCATION
 	public Result selectEventsByLocation(int locationId) {
 		final JsonNode[] result = { null };
-		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name " +
+		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name, " +
 				"(SELECT COUNT(ea.user_id) FROM Event_attendees ea WHERE ea.event_id = Events.event_id) AS noOfAttendees " +
 				"FROM Events, Locations, Location_types " +
 				"WHERE Locations.location_id = ? " +
