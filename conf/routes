@@ -40,6 +40,7 @@ POST    /user/deleteAccount             controllers.UserController.deleteAccount
 GET     /location/list-all              controllers.LocationController.listLocations
 GET     /location/getLocation           controllers.LocationController.getLocation(locationId:Integer)
 GET     /location/search                controllers.LocationController.searchLocations(search:String)
+GET     /location/userfavourite         controllers.LocationController.checkIfFavourite(userId:Long, locationId:Integer)
 
 GET		/event/select					controllers.EventController.selectEvent(eventId:Integer)
 GET		/event/select-attendees			controllers.EventController.selectEventAttendees(eventId:Integer)
@@ -51,7 +52,6 @@ GET     /event/chat-select              controllers.EventController.selectEventC
 POST	/event/create					controllers.EventController.createEvent()
 POST 	/event/update					controllers.EventController.updateEvent()
 POST 	/event/cancel					controllers.EventController.cancelEvent()
-POST 	/event/add-event-owner			controllers.EventController.addEventOwner()
 POST	/event/attend					controllers.EventController.addEventAttendee()
 POST    /event/unattend                 controllers.EventController.deleteEventAttendee()
 POST	/event/chat-insert              controllers.EventController.insertEventChat()
