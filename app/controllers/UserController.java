@@ -59,6 +59,25 @@ public class UserController extends Controller {
 
 	}
 
+	// DELETE ACCOUNT
+	public Result deleteAccount(){
+		JsonNode jNode = request().body().asJson();
+
+		SQLTools.StatementFiller sf = pstmt -> {
+			pstmt.setLong(1, jNode.findPath("user_id").asLong());
+		};
+
+		SQLTools.ResultSetProcessor rp = rs -> {};
+
+		try{
+			SQLTools.doPreparedStatement(db, "DELETE FROM Users WHERE user_id = ?", sf, rp);
+		} catch(SQLException e){
+			return internalServerError("couldn't delete user" + e);
+		}
+
+		return ok("deleted user");
+	}
+
 	// CREATE CHILD
 	public Result createChild(){
 		JsonNode jNode = request().body().asJson();

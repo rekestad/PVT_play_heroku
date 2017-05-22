@@ -32,6 +32,7 @@ POST    /user/location                  controllers.UserController.createFavorit
 POST    /user/deleteFavLocation         controllers.UserController.deleteFavoriteLocation()
 POST    /user/like                      controllers.UserController.createLike()
 POST    /user/unlike                    controllers.UserController.deleteLike()
+POST    /user/deleteAccount             controllers.UserController.deleteAccount()
 
 #GET	/importSthlmData				controllers.SthlmDataController.importAll
 #GET	/updateSthlmData				controllers.SthlmDataController.updateAll
@@ -51,7 +52,7 @@ GET     /event/chat-select              controllers.EventController.selectEventC
 POST	/event/create					controllers.EventController.createEvent()
 POST 	/event/update					controllers.EventController.updateEvent()
 POST 	/event/cancel					controllers.EventController.cancelEvent()
-POST 	/event/add-event-owner			controllers.EventController.addEventOwner()
+POST    /event/deleteEvent              controllers.EventController.deleteEvent()
 POST	/event/attend					controllers.EventController.addEventAttendee()
 POST    /event/unattend                 controllers.EventController.deleteEventAttendee()
 POST	/event/chat-insert              controllers.EventController.insertEventChat()
