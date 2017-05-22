@@ -128,6 +128,7 @@ public class EventController extends Controller {
 	public Result selectEventsByLocation(int locationId) {
 		final JsonNode[] result = { null };
 		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name " +
+				"(SELECT COUNT(ea.user_id) FROM Event_attendees ea WHERE ea.event_id = Events.event_id) AS noOfAttendees " +
 				"FROM Events, Locations, Location_types " +
 				"WHERE Locations.location_id = ? " +
 				"AND Events.location_id = Locations.location_id " +
