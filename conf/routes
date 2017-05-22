@@ -32,6 +32,7 @@ POST    /user/location                  controllers.UserController.createFavorit
 POST    /user/deleteFavLocation         controllers.UserController.deleteFavoriteLocation()
 POST    /user/like                      controllers.UserController.createLike()
 POST    /user/unlike                    controllers.UserController.deleteLike()
+POST    /user/deleteAccount             controllers.UserController.deleteAccount()
 
 #GET	/importSthlmData				controllers.SthlmDataController.importAll
 #GET	/updateSthlmData				controllers.SthlmDataController.updateAll
