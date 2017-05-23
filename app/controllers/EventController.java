@@ -1,9 +1,12 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.tools.SQLTools;
 import controllers.tools.SecuredAction;
 import play.db.Database;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.With;
@@ -19,7 +22,7 @@ public class EventController extends Controller {
 	public EventController(Database db) {
 		this.db = db;
 		nullRp = rs -> {
-			
+
 		};
 	}
 
@@ -120,7 +123,7 @@ public class EventController extends Controller {
 
 	// SELECT EVENT
 	public Result selectEvent(int eventId) {
-		final JsonNode[] result = { null };
+		final JsonNode[] result = {null};
 		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name "
 				+ "FROM Events, Locations, Location_types WHERE "
 				+ "Events.event_id = ? AND Events.location_id = Locations.location_id AND "
@@ -167,7 +170,7 @@ public class EventController extends Controller {
 
 	// SELECT EVENT BY LOCATION
 	public Result selectEventsByLocation(int locationId) {
-		final JsonNode[] result = { null };
+		final JsonNode[] result = {null};
 		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name, " +
 				"(SELECT COUNT(ea.user_id) FROM Event_attendees ea WHERE ea.event_id = Events.event_id) AS noOfAttendees " +
 				"FROM Events, Locations, Location_types " +
@@ -194,7 +197,7 @@ public class EventController extends Controller {
 
 	// SELECT EVENT BY USER
 	public Result selectEventsByUser(long userId) {
-		final JsonNode[] result = { null };
+		final JsonNode[] result = {null};
 		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name "
 				+ "FROM Events, Locations, Location_types WHERE EXISTS "
 				+ "(SELECT NULL FROM Event_attendees WHERE Event_attendees.event_id = Events.event_id AND "
@@ -217,7 +220,7 @@ public class EventController extends Controller {
 	}
 
 	// CREATE EVENT ATTENDEE (Ska inte denna länkas med Users_children-tabellen?)
-	public Result addEventAttendee(){
+	public Result addEventAttendee() {
 		JsonNode jNode = request().body().asJson();
 		String sql = "INSERT INTO Event_attendees VALUES (?,?,?)";
 
@@ -235,10 +238,10 @@ public class EventController extends Controller {
 
 		return ok("User attendee created.");
 	}
-	
+
 
 	// DELETE ATTENDEE
-	public Result deleteEventAttendee(){
+	public Result deleteEventAttendee() {
 		JsonNode jNode = request().body().asJson();
 		String sql = "DELETE FROM Event_attendees WHERE event_id = ? AND user_id = ?";
 
@@ -258,13 +261,90 @@ public class EventController extends Controller {
 
 	// SELECT EVENT ATTENDEES
 	public Result selectEventAttendees(int eventId) {
-		final JsonNode[] result = { null };
-		String sql = "SELECT u.*, (SELECT GROUP_CONCAT(c.age) FROM User_children c WHERE c.parent_id = u.user_id) AS children "
-				+ "FROM Users u WHERE EXISTS " + "(SELECT NULL FROM Event_attendees e WHERE e.event_id = ? AND "
-				+ "e.user_id = u.user_id)";
+		final JsonNode[] result = {null};
+		String sql = "SELECT e.event_id, e.attending_children_ids, u.* FROM Event_attendees e, Users u " +
+				"WHERE e.user_id = u.user_id AND e.event_id = ?";
+
+		SQLTools.StatementFiller sf = stmt -> stmt.setInt(1, eventId);
+
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
+
+		try {
+			SQLTools.doPreparedStatement(db, sql, sf, rp);
+
+			for (JsonNode currUserNode : result[0]) {
+				ObjectNode currUserObj = (ObjectNode) currUserNode;
+				int[] childrenIds = commaStringToIntArr(currUserObj.get("attending_children_ids").asText());
+				currUserObj.remove("attending_children_ids");
+
+				String childrenAges = getChildrenAgesFromIDs(childrenIds);
+				currUserObj.set("children", Json.toJson(childrenAges));
+
+			}
+
+		} catch (SQLException e) {
+			return internalServerError(e.toString());
+		}
+
+		return ok(result[0]);
+	}
+
+	private String getChildrenAgesFromIDs(int[] ids) throws SQLException {
+		final String[] result = {""};
+		StringBuilder sql = new StringBuilder("SELECT age from User_children WHERE child_id IN (");
+		for (int i = 0; i < ids.length-1; i++) {
+			sql.append("?,");
+		}
+		sql.append("?)");
 
 		SQLTools.StatementFiller sf = stmt -> {
-			stmt.setInt(1, eventId);
+			for (int i = 0; i < ids.length; i++) {
+				stmt.setInt(i+1, ids[i]);
+			}
+		};
+
+		SQLTools.ResultSetProcessor rp = rs -> {
+			while (rs.next()) {
+				result[0] += rs.getInt("age")+",";
+			}
+		};
+
+		SQLTools.doPreparedStatement(db, sql.toString(), sf, rp);
+		return result[0];
+	}
+
+	/**
+	 * Substrings that aren't a number are ignored
+	 */
+	private int[] commaStringToIntArr(String input) {
+		String[] splitted = input.split(",");
+		int[] numbers = new int[splitted.length];
+
+		int i = 0;
+		for (String curr : splitted) {
+			try {
+				numbers[i] = Integer.parseInt(curr);
+				i++;
+			} catch (NumberFormatException e) {
+			}
+		}
+
+		return numbers;
+	}
+
+	// SELECT ALL EVENTS CREATED BY USER
+	public Result selectEventsCreatedByUser(long userId) {
+		final JsonNode[] result = {null};
+		String userID = "" + userId;
+
+		String sql = "SELECT l.name_short, e.event_id, e.date, e.start_time, e.end_time, e.description, lt.type_name\n" +
+				"FROM Users AS u, Events AS e, Locations AS l, Location_types AS lt \n" +
+				"WHERE u.user_id = e.user_id\n" +
+				"AND e.location_id = l.location_id AND l.location_type = lt.type_id\n" +
+				"AND u.user_id = ?";
+
+		SQLTools.StatementFiller sf = stmt -> {
+			stmt.setString(1, userID);
 		};
 
 		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
@@ -278,33 +358,9 @@ public class EventController extends Controller {
 		return ok(result[0]);
 	}
 
-	// SELECT ALL EVENTS CREATED BY USER
-	public Result selectEventsCreatedByUser(long userId){
-		final JsonNode[] result = {null};
-		String userID = "" + userId;
-
-		String sql = "SELECT l.name_short, e.event_id, e.date, e.start_time, e.end_time, e.description, lt.type_name\n" +
-				"FROM Users AS u, Events AS e, Locations AS l, Location_types AS lt \n" +
-				"WHERE u.user_id = e.user_id\n" +
-				"AND e.location_id = l.location_id AND l.location_type = lt.type_id\n" +
-				"AND u.user_id = ?";
-
-		SQLTools.StatementFiller sf = stmt -> {stmt.setString(1, userID);};
-
-		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
-
-		try{
-			SQLTools.doPreparedStatement(db, sql, sf, rp);
-		} catch (SQLException e){
-			return internalServerError(e.toString());
-		}
-
-		return ok(result[0]);
-	}
-
 	// SELECT EVENT CHAT
 	public Result selectEventChat(int eventId) {
-		final JsonNode[] result = { null };
+		final JsonNode[] result = {null};
 
 		String sql = "SELECT CONCAT(Users.first_name, ' ', Users.last_name) AS name, message, " +
 				"date_format(date_time, '%Y-%m-%d-%H.%i') AS date_time, Users.user_id FROM Chats, Users " +
@@ -342,7 +398,7 @@ public class EventController extends Controller {
 		} catch (SQLException e) {
 			return internalServerError("Error: " + e.toString());
 		}
-		
+
 		return ok("Chat message inserted");
 
 	}
