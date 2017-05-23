@@ -143,6 +143,28 @@ public class EventController extends Controller {
 		return ok(result[0]);
 	}
 
+	// SELECT LAST CREATED EVENT
+	public Result selectLastCreatedEvent() {
+		final JsonNode[] result = { null };
+		String sql = "SELECT MAX(event_id) FROM Events";
+
+		SQLTools.StatementFiller sf = stmt -> {
+			//stmt.setInt(1, eventId);
+		};
+
+		SQLTools.ResultSetProcessor rp = rs -> {
+			result[0] = SQLTools.columnsAndRowsToJSON(rs);
+		};
+
+		try {
+			SQLTools.doPreparedStatement(db, sql, sf, rp);
+		} catch (SQLException e) {
+			return internalServerError("Error: " + e.toString());
+		}
+
+		return ok(result[0]);
+	}
+
 	// SELECT EVENT BY LOCATION
 	public Result selectEventsByLocation(int locationId) {
 		final JsonNode[] result = { null };
