@@ -23,7 +23,7 @@ public class EventController extends Controller {
 		};
 	}
 
-	// CREATE EVENT
+	// CREATE EVENT (lägga till eventattend)
 	public Result createEvent() {
 		JsonNode jNode = request().body().asJson();
 		String sql = "INSERT INTO Events VALUES (NULL, ?, ?, ?, ?, ?, ?, 1)";
@@ -37,16 +37,16 @@ public class EventController extends Controller {
 			pstmt.setString(6, jNode.findPath("description").textValue());
 		};
 
-		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
+		/*String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
 
 		SQLTools.StatementFiller sf2 = pstmt -> {
 			pstmt.setLong(1, jNode.findPath("user_id").asLong());
 			pstmt.setString(2, jNode.findPath("description").textValue());
-		};
+		};*/
 
 		try {
 			SQLTools.doPreparedStatement(db, sql, sf, nullRp);
-			SQLTools.doPreparedStatement(db, sql2, sf2, nullRp);
+			//SQLTools.doPreparedStatement(db, sql2, sf2, nullRp);
 		} catch (SQLException e) {
 			return internalServerError("Error: " + e.toString());
 		}
@@ -264,8 +264,7 @@ public class EventController extends Controller {
 		String sql = "SELECT l.name_short, e.event_id, e.date, e.start_time, e.end_time, e.description, lt.type_name\n" +
 				"FROM Users AS u, Events AS e, Locations AS l, Location_types AS lt \n" +
 				"WHERE u.user_id = e.user_id\n" +
-				"AND e.location_id = l.location_id\n" +
-				"AND l.location_type = lt.type_id\n" +
+				"AND e.location_id = l.location_id AND l.location_type = lt.type_id\n" +
 				"AND u.user_id = ?";
 
 		SQLTools.StatementFiller sf = stmt -> {stmt.setString(1, userID);};
