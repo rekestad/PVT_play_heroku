@@ -197,12 +197,26 @@ public class EventController extends Controller {
 
 	// SELECT EVENT BY USER
 	public Result selectEventsByUser(long userId) {
-		final JsonNode[] result = {null};
-		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name "
-				+ "FROM Events, Locations, Location_types WHERE EXISTS "
-				+ "(SELECT NULL FROM Event_attendees WHERE Event_attendees.event_id = Events.event_id AND "
-				+ "Event_attendees.user_id = ?) AND " + "Events.location_id = Locations.location_id AND "
-				+ "Locations.location_type = Location_types.type_id";
+		final JsonNode[] result = { null };
+//		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name "
+//				+ "FROM Events, Locations, Location_types WHERE EXISTS "
+//				+ "(SELECT NULL FROM Event_attendees WHERE Event_attendees.event_id = Events.event_id AND "
+//				+ "Event_attendees.user_id = ?) AND " + "Events.location_id = Locations.location_id AND "
+//				+ "Locations.location_type = Location_types.type_id";
+
+		String sql = "SELECT DISTINCT Events.*, Locations.name, Location_types.type_name, " +
+				"(SELECT COUNT(ea.user_id) " +
+				"FROM Event_attendees ea " +
+				"WHERE ea.event_id = Events.event_id) AS noOfAttendees " +
+				"FROM Events, Locations, Location_types " +
+				"WHERE EXISTS " +
+				"(SELECT NULL FROM Event_attendees " +
+				"WHERE Event_attendees.event_id = Events.event_id " +
+				"AND Event_attendees.user_id = ?) " +
+				"AND Events.location_id = Locations.location_id " +
+				"AND Locations.location_type = Location_types.type_id " +
+				"AND CONCAT(date, ' ', end_time) > NOW() " +
+				"ORDER BY Events.date, Events.start_time";
 
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setLong(1, userId);
