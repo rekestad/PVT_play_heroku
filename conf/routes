@@ -23,7 +23,7 @@ GET     /user/children                  controllers.UserController.getUserChildr
 GET     /user/getChildAge               controllers.UserController.getChildAge(childID:Integer)
 GET     /user/getUserLocations          controllers.UserController.getUserLocations(userID:Long)
 GET     /user/getUserLocationsEvents    controllers.UserController.getUserLocationsEvents(userID:Long)
-GET     /user/getUserInfo               controllers.UserController.getAllProfileInfo(userID:Long)
+GET     /user/getUserLocationsEventsTest    controllers.UserController.getUserLocationsEventsTest(userID:Long)
 
 POST    /user/create                    controllers.UserController.createUser()
 POST    /user/createChild               controllers.UserController.createChild()
