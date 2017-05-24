@@ -179,9 +179,9 @@ public class UserController extends Controller {
 	}
 
 	// GET SELECTED USER
-	public Result getUser(long fbID) {
+	public Result getUser(long userID) {
 		final JsonNode[] result = {null};
-		String fbIDStr = "" + fbID;
+		String fbIDStr = "" + userID;
 
 		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, fbIDStr);
 		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
