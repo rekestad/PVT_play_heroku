@@ -326,11 +326,11 @@ public class UserController extends Controller {
     public Result getUserLocationsEventsTest(long userID){
         final JsonNode[] result = {null};
 
-        String sql = "SELECT l.location_id, l.name_short AS name, lt.type_name, e.*, " +
+        String sql = "SELECT l.location_id, l.name_short, l.name, lt.type_name, e.*, " +
                 "(SELECT COUNT(ea.user_id) FROM Event_attendees ea WHERE ea.event_id = e.event_id) AS noOfAttendees " +
                 "FROM Locations l, User_locations ul, Events e, Location_types lt " +
                 "WHERE l.location_id = ul.location_id " +
-                "AND ul.user_id = ?" +
+                "AND ul.user_id = ? " +
                 "AND l.location_id = e.location_id " +
                 "AND l.location_type = lt.type_id " +
                 "AND CONCAT(e.date, ' ', e.end_time) > NOW() " +
