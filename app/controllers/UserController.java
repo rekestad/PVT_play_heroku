@@ -305,39 +305,16 @@ public class UserController extends Controller {
 		return ok(result[0]);
 	}
 
-	// HÄMTA EVENT HOS PERSONENS FAVORITPLATSER
+	// GET A USERS LOCATIONS EVENTS (HOME VIEW)
 	public Result getUserLocationsEvents(long userID){
 		final JsonNode[] result = {null};
-		//String userID2 = "" + userID;
-        String sql = "SELECT l.location_id, l.name_short AS name, lt.type_name, e.*, " +
-                "(SELECT COUNT(ea.user_id) FROM Event_attendees ea WHERE ea.event_id = e.event_id) AS noOfAttendees " +
-                "FROM Locations l, User_locations ul, Events e, Location_types lt " +
-                "WHERE l.location_id = ul.location_id " +
-                "AND ul.user_id = ?" +
-                "AND l.location_id = e.location_id " +
-                "AND l.location_type = lt.type_id " +
-                "AND CONCAT(e.date, ' ', e.end_time) > NOW() " +
-                "ORDER BY e.date, e.start_time";
+		String userID2 = "" + userID;
 
-//        String sql = "SELECT DISTINCT Events.*, Locations.name_short AS name, Location_types.type_name, " +
-//                "(SELECT COUNT(ea.user_id) " +
-//                "FROM Event_attendees ea " +
-//                "WHERE ea.event_id = Events.event_id) AS noOfAttendees " +
-//                "FROM Events, Locations, Location_types" +
-//                "WHERE EXISTS " +
-//                "(SELECT NULL FROM Event_attendees " +
-//                "WHERE Event_attendees.event_id = Events.event_id " +
-//                "AND Event_attendees.user_id = ?) " +
-//                "AND Events.location_id = Locations.location_id " +
-//                "AND Locations.location_type = Location_types.type_id " +
-//                "AND CONCAT(date, ' ', end_time) > NOW() " +
-//                "ORDER BY Events.date, Events.start_time";
-
-		SQLTools.StatementFiller sf = stmt -> stmt.setLong(1, userID);
+		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, userID2);
 		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
 		try{
-			SQLTools.doPreparedStatement(db, sql, sf, rp);
+			SQLTools.doPreparedStatement(db, "SELECT l.location_id, l.name, lt.type_name, e.* FROM Locations AS l, User_locations AS ul, Events AS e, Location_types AS lt WHERE l.location_id = ul.location_id AND l.location_id =e.location_id AND l.location_type = lt.type_id AND ul.user_id = ? AND CONCAT(e.date, ' ', e.end_time) > NOW()", sf, rp);
 		} catch (SQLException e){
 			return internalServerError("couldn't load users locations events");
 		}
@@ -353,10 +330,10 @@ public class UserController extends Controller {
 		String sqlUser = "SELECT first_name, last_name FROM Users WHERE user_id = ?";
 		String sqlChildren = "SELECT child_id, age FROM `User_children` WHERE parent_id = ?";
 		String sqlEvent = "SELECT l.name_short, e.event_id, e.date, e.start_time, e.end_time, e.description, lt.type_name\n" +
-				"FROM Users AS u, Events AS e, Locations AS l, Location_types AS lt " +
-				"WHERE u.user_id = e.user_id " +
-				"AND e.location_id = l.location_id " +
-				"AND l.location_type = lt.type_id " +
+				"FROM Users AS u, Events AS e, Locations AS l, Location_types AS lt \n" +
+				"WHERE u.user_id = e.user_id\n" +
+				"AND e.location_id = l.location_id\n" +
+				"AND l.location_type = lt.type_id\n" +
 				"AND u.user_id = ?";
 		String sqlLocations = "SELECT l.location_id, l.name_short FROM Locations AS l, User_locations AS ul WHERE l.location_id = ul.location_id AND ul.user_id = ?";
 		String sqlLikes = "SELECT COUNT(*) AS likes FROM User_likes WHERE liked_id=?";
