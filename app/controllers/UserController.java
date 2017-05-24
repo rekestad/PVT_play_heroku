@@ -338,7 +338,8 @@ public class UserController extends Controller {
 		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
 		try{
-			SQLTools.doPreparedStatement(db, sql, sf, rp);
+//			SQLTools.doPreparedStatement(db, sql, sf, rp);
+			SQLTools.doPreparedStatement(db, "SELECT l.location_id, l.name, lt.type_name, e.* FROM Locations AS l, User_locations AS ul, Events AS e, Location_types AS lt WHERE l.location_id = ul.location_id AND l.location_id =e.location_id AND l.location_type = lt.type_id AND ul.user_id = ? AND CONCAT(e.date, ' ', e.end_time) > NOW()", sf, rp);
 		} catch (SQLException e){
 			return internalServerError("Error: " + e.toString());
 		}
