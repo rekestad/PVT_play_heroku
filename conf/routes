@@ -43,6 +43,7 @@ GET     /location/search                controllers.LocationController.searchLoc
 GET     /location/userfavourite         controllers.LocationController.checkIfFavourite(userId:Long, locationId:Integer)
 
 GET		/event/select					controllers.EventController.selectEvent(eventId:Integer)
+GET		/event/select-all				controllers.EventController.selectAllEvents()
 GET     /event/selectMaxEventId         controllers.EventController.selectLastCreatedEvent()
 GET		/event/select-attendees			controllers.EventController.selectEventAttendees(eventId:Integer)
 GET		/event/select-by-location		controllers.EventController.selectEventsByLocation(locationId:Integer)

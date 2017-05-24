@@ -422,4 +422,22 @@ public class EventController extends Controller {
 	public Result securityTest() {
 		return ok("Method called.");
 	}
+
+	// GET ALL EVENTS, LIMITED TO 100 RETURNED EVENTS
+	public Result selectAllEvents(){
+		final JsonNode[] result = {null};
+
+		String sql = "SELECT l.location_id, l.name_short, l.name, lt.type_name, e.*, (SELECT COUNT(ea.user_id) FROM Event_attendees ea WHERE ea.event_id = e.event_id) AS noOfAttendees, (SELECT GROUP_CONCAT(DISTINCT uc.age ORDER BY uc.age SEPARATOR ', ') FROM User_children uc, Event_attendees ea2 WHERE ea2.event_id = e.event_id AND ea2.attending_children_ids LIKE CONCAT('%', CONCAT(uc.child_id, ',%')) GROUP BY e.event_id) AS children FROM Locations l, Events e, Location_types lt WHERE l.location_id = e.location_id AND l.location_type = lt.type_id AND CONCAT(e.date, ' ', e.end_time) > NOW() ORDER BY e.date, e.start_time LIMIT 100";
+
+		SQLTools.StatementFiller sf = stmt -> {};
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
+
+		try{
+			SQLTools.doPreparedStatement(db, sql, sf, rp);
+		} catch (SQLException e){
+			return internalServerError("Error: " + e.toString());
+		}
+
+		return ok(result[0]);
+	}
 }
