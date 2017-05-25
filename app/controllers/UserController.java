@@ -288,6 +288,28 @@ public class UserController extends Controller {
 
 	}
 
+	// GET MY LIKERS ID AND NAME
+	public Result getLikers(long userID){
+		final JsonNode[] result = {null};
+		String userID2 = ""+userID;
+
+		SQLTools.StatementFiller sf = stmt -> stmt.setString(1, userID2);
+		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
+
+		try {
+			SQLTools.doPreparedStatement(db, "SELECT Users.user_id, Users.first_name, Users.last_name \n" +
+							"FROM Users, User_likes \n" +
+							"WHERE Users.user_id = User_likes.liker_id \n" +
+							"AND User_likes.liked_id = ?", sf,
+					rp);
+		} catch (SQLException e) {
+			return internalServerError("couldn't load likers: " + e);
+		}
+
+		return ok(result[0]);
+
+	}
+
 	// GET A USERS LOCATIONS (PROFILE VIEW)
 	public Result getUserLocations(long userID){
 		final JsonNode[] result = {null};

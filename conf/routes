@@ -18,6 +18,7 @@ GET		/hello							controllers.HomeController.helloThere
 GET		/user/list-all					controllers.UserController.listUsrs
 GET     /user/getLikes                  controllers.UserController.getAmountOfLikes(id:Long)
 GET     /user/getLikedUsers             controllers.UserController.getLikedUsers(userID:Long)
+GET     /user/getLikers                 controllers.UserController.getLikers(userID:Long)
 GET     /user/getUser                   controllers.UserController.getUser(userID:Long)
 GET     /user/children                  controllers.UserController.getUserChildren(userID:Long)
 GET     /user/getChildAge               controllers.UserController.getChildAge(childID:Integer)
@@ -39,6 +40,7 @@ POST    /user/deleteAccount             controllers.UserController.deleteAccount
 
 GET     /location/list-all              controllers.LocationController.listLocations
 GET     /location/getLocation           controllers.LocationController.getLocation(locationId:Integer)
+GET     /location/nearYou               controllers.LocationController.getLocationsNearYou(x:Integer, y:Integer)
 GET     /location/search                controllers.LocationController.searchLocations(search:String)
 GET     /location/userfavourite         controllers.LocationController.checkIfFavourite(userId:Long, locationId:Integer)
 
