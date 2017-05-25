@@ -24,7 +24,7 @@ GET     /user/children                  controllers.UserController.getUserChildr
 GET     /user/getChildAge               controllers.UserController.getChildAge(childID:Integer)
 GET     /user/getUserLocations          controllers.UserController.getUserLocations(userID:Long)
 GET     /user/getUserLocationsEvents    controllers.UserController.getUserLocationsEvents(userID:Long)
-GET     /user/getUserInfo               controllers.UserController.getAllProfileInfo(userID:Long)
+GET     /user/getUserLocationsEventsTest    controllers.UserController.getUserLocationsEventsTest(userID:Long)
 
 POST    /user/create                    controllers.UserController.createUser()
 POST    /user/createChild               controllers.UserController.createChild()
@@ -45,6 +45,7 @@ GET     /location/search                controllers.LocationController.searchLoc
 GET     /location/userfavourite         controllers.LocationController.checkIfFavourite(userId:Long, locationId:Integer)
 
 GET		/event/select					controllers.EventController.selectEvent(eventId:Integer)
+GET		/event/select-all				controllers.EventController.selectAllEvents()
 GET     /event/selectMaxEventId         controllers.EventController.selectLastCreatedEvent()
 GET		/event/select-attendees			controllers.EventController.selectEventAttendees(eventId:Integer)
 GET		/event/select-by-location		controllers.EventController.selectEventsByLocation(locationId:Integer)
