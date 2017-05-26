@@ -40,7 +40,7 @@ POST    /user/deleteAccount             controllers.UserController.deleteAccount
 
 GET     /location/list-all              controllers.LocationController.listLocations
 GET     /location/getLocation           controllers.LocationController.getLocation(locationId:Integer)
-GET     /location/nearYou               controllers.LocationController.getLocationsNearYou(x:Integer, y:Integer)
+GET     /location/nearYou               controllers.LocationController.getLocationsNearYou(lat:Double, lng:Double)
 GET     /location/search                controllers.LocationController.searchLocations(search:String)
 GET     /location/userfavourite         controllers.LocationController.checkIfFavourite(userId:Long, locationId:Integer)
 

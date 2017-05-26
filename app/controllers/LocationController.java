@@ -88,6 +88,36 @@ public class LocationController extends Controller {
         return ok(result[0]);
     }
 
+    // LOCATIONS NEAR YOU
+    public Result getLocationsNearYou(double lat, double lng) {
+        final JsonNode[] result = {null};
+        //search += "%";
+        final double latitude = lat;
+        final double longitude = lng;
+
+        SQLTools.StatementFiller sf = stmt -> {
+            stmt.setDouble(1, latitude);
+            stmt.setDouble(2, longitude);
+            stmt.setDouble(3, latitude);
+        };
+
+        SQLTools.ResultSetProcessor rp = rs -> {
+            result[0] = SQLTools.columnsAndRowsToJSON(rs);
+        };
+
+        try {
+            SQLTools.doPreparedStatement(db, "SELECT location_id, name ( 6371 * acos( cos( radians(?) ) * cos( radians( lat ) ) * \n" +
+                    "cos( radians( lng ) - radians(?) ) + sin( radians(?) ) * \n" +
+                    "sin( radians( lat ) ) ) ) AS distance FROM Locations HAVING\n" +
+                    "distance < 25 ORDER BY distance LIMIT 0 , 20\n", sf, rp);
+        } catch (SQLException e) {
+            return internalServerError("couldn't load locations" + e);
+        }
+
+
+        return ok(result[0]);
+    }
+
     // CHECK IF LOCATION IS USER FAVOURITE
     public Result checkIfFavourite(long userId, int locationId) {
 
