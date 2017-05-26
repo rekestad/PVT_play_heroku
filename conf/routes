@@ -40,8 +40,14 @@ POST    /user/deleteAccount             controllers.UserController.deleteAccount
 
 GET     /location/list-all              controllers.LocationController.listLocations
 GET     /location/getLocation           controllers.LocationController.getLocation(locationId:Integer)
+<<<<<<< HEAD
 GET     /location/nearYou               controllers.LocationController.getLocationsNearYou(lat:Double, lng:Double)
+=======
+#GET     /location/nearYou               controllers.LocationController.getLocationsNearYou(x:Integer, y:Integer)
+GET     /location/convert                controllers.LocationController.convertCoordinate()
+>>>>>>> master
 GET     /location/search                controllers.LocationController.searchLocations(search:String)
+
 GET     /location/userfavourite         controllers.LocationController.checkIfFavourite(userId:Long, locationId:Integer)
 
 GET		/event/select					controllers.EventController.selectEvent(eventId:Integer)

@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import controllers.tools.CoordinateConverter;
 import controllers.tools.SQLTools;
 import play.db.Database;
 import play.mvc.Controller;
@@ -8,6 +9,7 @@ import play.mvc.Result;
 
 import javax.inject.Inject;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class LocationController extends Controller {
     private Database db;
@@ -141,6 +143,41 @@ public class LocationController extends Controller {
         }
 
         return ok(getReturnData());
+    }
+
+    public Result convertCoordinate() {
+        final JsonNode[] result = {null};
+        String sql = "SELECT * FROM Locations";
+
+        CoordinateConverter cordi = new CoordinateConverter();
+
+
+        ArrayList coord = new ArrayList<int[]>();
+        final String[] results = null;
+
+        SQLTools.StatementFiller sf = stmt -> { };
+
+        SQLTools.ResultSetProcessor rp = rs -> {
+            while (rs.next()) {
+                int id = rs.getInt("location_id");
+                int posX = rs.getInt("position_x");
+                int posY = rs.getInt("position_y");
+
+                //int[] data = {id,posX,posY};
+                double[] coords = cordi.grid_to_geodetic(posX, posY);
+
+                results[0] += "Location id" + id + ", Old X: " + posX + ", Old Y:" + posY + ", New X: " + coords[0] + ", New Y: " + coords[1] + "\n";
+                //coord.add(data);
+            }
+        };
+
+        try {
+            SQLTools.doPreparedStatement(db, sql, sf, rp);
+        } catch (SQLException e) {
+            return internalServerError("Error: " + e.toString());
+        }
+
+        return ok(results[0]);
     }
 }
 
