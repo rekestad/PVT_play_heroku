@@ -147,7 +147,7 @@ public class LocationController extends Controller {
 
     public Result convertCoordinate() {
         final JsonNode[] result = {null};
-        String sql = "SELECT * FROM Locations";
+        String sql = "SELECT * FROM Locations LIMIT 20";
 
         CoordinateConverter cordi = new CoordinateConverter();
 
