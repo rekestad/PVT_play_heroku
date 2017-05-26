@@ -99,8 +99,8 @@ public class LocationController extends Controller {
 
         SQLTools.StatementFiller sf = stmt -> {
             stmt.setDouble(1, latitude);
-            stmt.setDouble(2, longitude);
-            stmt.setDouble(3, latitude);
+            stmt.setDouble(2, latitude);
+            stmt.setDouble(3, longitude);
         };
 
         SQLTools.ResultSetProcessor rp = rs -> {
@@ -108,10 +108,7 @@ public class LocationController extends Controller {
         };
 
         try {
-            SQLTools.doPreparedStatement(db, "SELECT location_id, name ( 6371 * acos( cos( radians(?) ) * cos( radians( lat ) ) * \n" +
-                    "cos( radians( lng ) - radians(?) ) + sin( radians(?) ) * \n" +
-                    "sin( radians( lat ) ) ) ) AS distance FROM Locations HAVING\n" +
-                    "distance < 25 ORDER BY distance LIMIT 0 , 20\n", sf, rp);
+            SQLTools.doPreparedStatement(db, "SELECT location_id, name, 6371 * 2 * ASIN(SQRT( POWER(SIN((? - abs(lat)) * pi()/180 / 2), 2) + COS(? * pi()/180 ) * COS(abs(lat) * pi()/180) * POWER(SIN((? - lng) * pi()/180 / 2), 2) )) AS distance FROM Locations HAVING distance < 3 ORDER BY distance LIMIT 20", sf, rp);
         } catch (SQLException e) {
             return internalServerError("couldn't load locations" + e);
         }
