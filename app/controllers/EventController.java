@@ -45,11 +45,16 @@ public class EventController extends Controller {
 
 		SQLTools.StatementFiller sf2 = pstmt -> {
 			pstmt.setLong(1, jNode.findPath("user_id").asLong());
-			pstmt.setString(2, jNode.findPath(",61,").textValue());
+			pstmt.setString(2, jNode.findPath(",33,").textValue());
 		};
 
 		try {
 			SQLTools.doPreparedStatement(db, sql, sf, nullRp);
+		} catch (SQLException e) {
+			return internalServerError("Error: " + e.toString());
+		}
+
+		try {
 			SQLTools.doPreparedStatement(db, sql2, sf2, nullRp);
 		} catch (SQLException e) {
 			return internalServerError("Error: " + e.toString());
