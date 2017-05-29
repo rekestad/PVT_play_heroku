@@ -205,7 +205,7 @@ public class UserController extends Controller {
 		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
 		try{
-			SQLTools.doPreparedStatement(db, "SELECT child_id, age FROM `User_children` WHERE parent_id = ?", sf, rp);
+			SQLTools.doPreparedStatement(db, "SELECT child_id, age FROM `User_children` WHERE parent_id = ? ORDER BY age", sf, rp);
 		} catch (SQLException e){
 			return internalServerError("couldn't load children");
 		}
@@ -349,7 +349,7 @@ public class UserController extends Controller {
     public Result getUserLocationsEventsTest(long userID){
         final JsonNode[] result = {null};
 
-        String sql = "SELECT l.location_id, l.name_short, l.name, lt.type_name, e.*, (SELECT COUNT(ea.user_id) FROM Event_attendees ea WHERE ea.event_id = e.event_id) AS noOfAttendees, (SELECT GROUP_CONCAT(DISTINCT uc.age ORDER BY uc.age SEPARATOR ', ') FROM User_children uc, Event_attendees ea2 WHERE ea2.event_id = e.event_id AND ea2.attending_children_ids LIKE CONCAT('%', CONCAT(uc.child_id, ',%')) GROUP BY e.event_id) AS children FROM Locations l, User_locations ul, Events e, Location_types lt WHERE l.location_id = ul.location_id AND ul.user_id = ? AND l.location_id = e.location_id AND l.location_type = lt.type_id AND CONCAT(e.date, ' ', e.end_time) > NOW() ORDER BY e.date, e.start_time";
+        String sql = "SELECT l.location_id, l.name_short, l.name, lt.type_name, e.*, (SELECT COUNT(ea.user_id) FROM Event_attendees ea WHERE ea.event_id = e.event_id) AS noOfAttendees, (SELECT GROUP_CONCAT(DISTINCT uc.age ORDER BY uc.age SEPARATOR ', ') FROM User_children uc, Event_attendees ea2 WHERE ea2.event_id = e.event_id AND ea2.attending_children_ids LIKE CONCAT('%,', CONCAT(uc.child_id, ',%')) GROUP BY e.event_id) AS children FROM Locations l, User_locations ul, Events e, Location_types lt WHERE l.location_id = ul.location_id AND ul.user_id = ? AND l.location_id = e.location_id AND l.location_type = lt.type_id AND CONCAT(e.date, ' ', e.end_time) > NOW() ORDER BY e.date, e.start_time";
 
         SQLTools.StatementFiller sf = stmt -> stmt.setLong(1, userID);
         SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);

@@ -38,18 +38,20 @@ public class EventController extends Controller {
 			pstmt.setString(4, jNode.findPath("start_time").textValue());
 			pstmt.setString(5, jNode.findPath("end_time").textValue());
 			pstmt.setString(6, jNode.findPath("description").textValue());
+
 		};
 
-		/*String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
+		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?, ?)";
 
 		SQLTools.StatementFiller sf2 = pstmt -> {
 			pstmt.setLong(1, jNode.findPath("user_id").asLong());
-			pstmt.setString(2, jNode.findPath("description").textValue());
-		};*/
+			pstmt.setLong(2, jNode.findPath("user_id").asLong());
+			pstmt.setString(3, jNode.findPath("attending_children_ids").textValue());
+		};
 
 		try {
 			SQLTools.doPreparedStatement(db, sql, sf, nullRp);
-			//SQLTools.doPreparedStatement(db, sql2, sf2, nullRp);
+			SQLTools.doPreparedStatement(db, sql2, sf2, nullRp);
 		} catch (SQLException e) {
 			return internalServerError("Error: " + e.toString());
 		}
@@ -151,6 +153,8 @@ public class EventController extends Controller {
 		final JsonNode[] result = { null };
 		String sql = "SELECT MAX(event_id) FROM Events";
 
+
+
 		SQLTools.StatementFiller sf = stmt -> {
 			//stmt.setInt(1, eventId);
 		};
@@ -204,7 +208,7 @@ public class EventController extends Controller {
 //				+ "Event_attendees.user_id = ?) AND " + "Events.location_id = Locations.location_id AND "
 //				+ "Locations.location_type = Location_types.type_id";
 
-		String sql = "SELECT DISTINCT l.location_id, l.name_short, l.name, lt.type_name, e.*, (SELECT COUNT(ea.user_id) FROM Event_attendees ea WHERE ea.event_id = e.event_id) AS noOfAttendees, (SELECT GROUP_CONCAT(DISTINCT uc.age ORDER BY uc.age SEPARATOR ', ') FROM User_children uc, Event_attendees ea2 WHERE ea2.event_id = e.event_id AND ea2.attending_children_ids LIKE CONCAT('%', CONCAT(uc.child_id, ',%')) GROUP BY e.event_id) AS children FROM Events e, Locations l, Location_types lt WHERE EXISTS (SELECT NULL FROM Event_attendees WHERE Event_attendees.event_id = e.event_id AND Event_attendees.user_id = ?) AND e.location_id = l.location_id AND l.location_type = lt.type_id AND CONCAT(date, ' ', end_time) > NOW() ORDER BY e.date, e.start_time";
+		String sql = "SELECT DISTINCT l.location_id, l.name_short, l.name, lt.type_name, e.*, (SELECT COUNT(ea.user_id) FROM Event_attendees ea WHERE ea.event_id = e.event_id) AS noOfAttendees, (SELECT GROUP_CONCAT(DISTINCT uc.age ORDER BY uc.age SEPARATOR ', ') FROM User_children uc, Event_attendees ea2 WHERE ea2.event_id = e.event_id AND ea2.attending_children_ids LIKE CONCAT('%,', CONCAT(uc.child_id, ',%')) GROUP BY e.event_id) AS children FROM Events e, Locations l, Location_types lt WHERE EXISTS (SELECT NULL FROM Event_attendees WHERE Event_attendees.event_id = e.event_id AND Event_attendees.user_id = ?) AND e.location_id = l.location_id AND l.location_type = lt.type_id AND CONCAT(date, ' ', end_time) > NOW() ORDER BY e.date, e.start_time";
 
 		SQLTools.StatementFiller sf = stmt -> {
 			stmt.setLong(1, userId);
