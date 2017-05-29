@@ -148,6 +148,33 @@ public class LocationController extends Controller {
         return ok(getReturnData());
     }
 
+    // CHECK IF LOCATION IS USER FAVOURITE 2
+    public Result checkIfFavourite2(long userId, int locationId) {
+        final JsonNode[] result = {null};
+        final long userID = userId;
+        final int locationID = locationId;
+
+        String sql = "SELECT CASE WHEN EXISTS(SELECT 1 FROM User_locations WHERE user_id = ? AND location_id = ?) THEN 'true' ELSE 'false' END AS result";
+
+        SQLTools.StatementFiller sf = stmt -> {
+            stmt.setLong(1, userID);
+            stmt.setInt(2, locationID);
+
+        };
+
+        SQLTools.ResultSetProcessor rp = rs -> {
+            result[0] = SQLTools.columnsAndRowsToJSON(rs);
+        };
+
+        try {
+            SQLTools.doPreparedStatement(db, sql, sf, rp);
+        } catch (SQLException e) {
+            return internalServerError("Error: " + e.toString());
+        }
+
+        return ok(result[0]);
+    }
+
     public Result convertCoordinate() {
         String sql = "SELECT * FROM Locations";
         ArrayList coordinates = new ArrayList<LocationCoordinate>();

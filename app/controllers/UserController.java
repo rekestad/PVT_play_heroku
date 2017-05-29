@@ -46,11 +46,16 @@ public class UserController extends Controller {
 			pstmt.setString(3, jNode.findPath("last_name").textValue());
 		};
 
+		SQLTools.StatementFiller sf2 = pstmt ->{
+			pstmt.setLong(1, jNode.findPath("user_id").asLong());
+		};
+
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
 		try {
 			SQLTools.doPreparedStatement(db, "INSERT INTO Users (user_id, first_name, last_name) VALUES (?,?,?)",
 					sf, rp);
+			SQLTools.doPreparedStatement(db,"INSERT INTO Logs (user_id, type) VALUES (?, 1)",sf2,rp);
 		} catch (SQLException e) {
 			return internalServerError("couldn't make user: " + e);
 		}
@@ -108,10 +113,15 @@ public class UserController extends Controller {
 			pstmt.setInt(2, jNode.findPath("location_id").asInt());
 		};
 
+		SQLTools.StatementFiller sf2 = pstmt -> {
+			pstmt.setLong(1, jNode.findPath("user_id").asLong());
+		};
+
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
 		try{
 			SQLTools.doPreparedStatement(db, "INSERT INTO User_locations VALUES (?,?)", sf, rp);
+			SQLTools.doPreparedStatement(db,"INSERT INTO Logs (user_id, type) VALUES (?, 2)", sf2, rp);
 		} catch (SQLException e){
 			return internalServerError("couldn't load favorite location" + e);
 		}
@@ -128,10 +138,15 @@ public class UserController extends Controller {
 			pstmt.setLong(2, jNode.findPath("location_id").asLong());
 		};
 
+		SQLTools.StatementFiller sf2 = pstmt -> {
+			pstmt.setLong(1, jNode.findPath("user_id").asLong());
+		};
+
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
 		try{
 			SQLTools.doPreparedStatement(db, "DELETE FROM User_locations WHERE user_id = ? AND location_id = ?", sf, rp);
+			SQLTools.doPreparedStatement(db, "INSERT INTO Logs (user_id, type) VALUES (?, 3)", sf2, rp);
 		} catch(SQLException e){
 			return internalServerError("couldn't delete like" + e);
 		}
@@ -148,10 +163,15 @@ public class UserController extends Controller {
 			pstmt.setLong(2, jNode.findPath("liked_id").asLong());
 		};
 
+		SQLTools.StatementFiller sf2 = pstmt -> {
+			pstmt.setLong(1, jNode.findPath("liker_id").asLong());
+		};
+
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
 		try{
 			SQLTools.doPreparedStatement(db, "INSERT INTO User_likes VALUES (?,?)", sf, rp);
+			SQLTools.doPreparedStatement(db, "INSERT INTO Logs (user_id, type) VALUES (?, 4)", sf2, rp);
 		} catch (SQLException e){
 			return internalServerError("couldn't load like" + e);
 		}
@@ -168,10 +188,15 @@ public class UserController extends Controller {
 			pstmt.setLong(2, jNode.findPath("liked_id").asLong());
 		};
 
+		SQLTools.StatementFiller sf2 = pstmt -> {
+			pstmt.setLong(1, jNode.findPath("liker_id").asLong());
+		};
+
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
 		try{
 			SQLTools.doPreparedStatement(db, "DELETE FROM User_likes WHERE liker_id = ? AND liked_id = ?", sf, rp);
+			SQLTools.doPreparedStatement(db, "INSERT INTO Logs (user_id, type) VALUES (?, 5)", sf2, rp);
 		} catch(SQLException e){
 			return internalServerError("couldn't delete like" + e);
 		}
