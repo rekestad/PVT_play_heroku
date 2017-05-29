@@ -228,7 +228,7 @@ public class SthlmDataController extends Controller {
 
             theDesc[0] = "";
         }
-        
+
         return ok("DONE");
 
     }
