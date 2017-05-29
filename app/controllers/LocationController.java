@@ -108,7 +108,7 @@ public class LocationController extends Controller {
         };
 
         try {
-            SQLTools.doPreparedStatement(db, "SELECT location_id, name, lat, lng, 6371 * 2 * ASIN(SQRT( POWER(SIN((? - abs(lat)) * pi()/180 / 2), 2) + COS(? * pi()/180 ) * COS(abs(lat) * pi()/180) * POWER(SIN((? - lng) * pi()/180 / 2), 2) )) AS distance FROM Locations HAVING distance < 3 ORDER BY distance LIMIT 20", sf, rp);
+            SQLTools.doPreparedStatement(db, "SELECT location_id, name, lat, lng, lt.type_name, round(6371 * 2 * ASIN(SQRT( POWER(SIN((? - abs(lat)) * pi()/180 / 2), 2) + COS(? * pi()/180 ) * COS(abs(lat) * pi()/180) * POWER(SIN((? - lng) * pi()/180 / 2), 2) )),1) AS distance FROM Locations AS l, Location_types AS lt WHERE l.location_type = lt.type_id HAVING distance < 3 ORDER BY distance LIMIT 20", sf, rp);
         } catch (SQLException e) {
             return internalServerError("couldn't load locations" + e);
         }
