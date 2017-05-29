@@ -96,6 +96,33 @@ public class LocationController extends Controller {
         return ok(result[0]);
     }
 
+    // LOCATIONS NEAR YOU
+    public Result getLocationsNearYou(double lat, double lng) {
+        final JsonNode[] result = {null};
+        //search += "%";
+        final double latitude = lat;
+        final double longitude = lng;
+
+        SQLTools.StatementFiller sf = stmt -> {
+            stmt.setDouble(1, latitude);
+            stmt.setDouble(2, latitude);
+            stmt.setDouble(3, longitude);
+        };
+
+        SQLTools.ResultSetProcessor rp = rs -> {
+            result[0] = SQLTools.columnsAndRowsToJSON(rs);
+        };
+
+        try {
+            SQLTools.doPreparedStatement(db, "SELECT location_id, name_short, location_type, round(6371 * 2 * ASIN(SQRT( POWER(SIN((? - abs(lat)) * pi()/180 / 2), 2) + COS(? * pi()/180 ) * COS(abs(lat) * pi()/180) * POWER(SIN((? - lng) * pi()/180 / 2), 2) )),1) AS distance FROM Locations HAVING distance < 3 ORDER BY distance LIMIT 20", sf, rp);
+        } catch (SQLException e) {
+            return internalServerError("couldn't load locations" + e);
+        }
+
+
+        return ok(result[0]);
+    }
+
     // CHECK IF LOCATION IS USER FAVOURITE
     public Result checkIfFavourite(long userId, int locationId) {
 

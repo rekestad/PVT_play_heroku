@@ -81,6 +81,7 @@ public class UserController extends Controller {
 	// CREATE CHILD
 	public Result createChild(){
 		JsonNode jNode = request().body().asJson();
+		System.out.println(jNode);
 
 		SQLTools.StatementFiller sf = pstmt -> {
 			pstmt.setLong(1, jNode.findPath("parent_id").asLong());
