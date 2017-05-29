@@ -3,17 +3,23 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.tools.CoordinateConverter;
 import controllers.tools.SQLTools;
+import org.w3c.dom.Element;
 import play.db.Database;
 import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.inject.Inject;
+import javax.xml.stream.Location;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class LocationController extends Controller {
     private Database db;
     private String returnData;
+    private String convertResults;
 
     @Inject
     public LocationController(Database db) {
@@ -102,7 +108,7 @@ public class LocationController extends Controller {
         };
 
         SQLTools.ResultSetProcessor rp = rs -> {
-            while(rs.next())
+            while (rs.next())
                 setReturnData(rs.getString("result"));
         };
 
@@ -116,28 +122,23 @@ public class LocationController extends Controller {
     }
 
     public Result convertCoordinate() {
-        final JsonNode[] result = {null};
-        String sql = "SELECT * FROM Locations LIMIT 20";
+        String sql = "SELECT * FROM Locations";
+        ArrayList coordinates = new ArrayList<LocationCoordinate>();
 
         CoordinateConverter cordi = new CoordinateConverter();
 
-
-        ArrayList coord = new ArrayList<int[]>();
-        final String[] results = null;
-
-        SQLTools.StatementFiller sf = stmt -> { };
+        SQLTools.StatementFiller sf = stmt -> {
+        };
 
         SQLTools.ResultSetProcessor rp = rs -> {
             while (rs.next()) {
-                int id = rs.getInt("location_id");
+                Integer id = rs.getInt("location_id");
                 int posX = rs.getInt("position_x");
                 int posY = rs.getInt("position_y");
 
-                //int[] data = {id,posX,posY};
                 double[] coords = cordi.grid_to_geodetic(posX, posY);
 
-                results[0] += "Location id" + id + ", Old X: " + posX + ", Old Y:" + posY + ", New X: " + coords[0] + ", New Y: " + coords[1] + "\n";
-                //coord.add(data);
+                coordinates.add(new LocationCoordinate(id, coords[0], coords[1]));
             }
         };
 
@@ -147,7 +148,72 @@ public class LocationController extends Controller {
             return internalServerError("Error: " + e.toString());
         }
 
-        return ok(results[0]);
+        String returnThis = "";
+
+        for (int i = 0; i < coordinates.size(); i++) {
+            LocationCoordinate lc = (LocationCoordinate) coordinates.get(i);
+
+            executeUpdate(lc.getId(), lc.getxPos(), lc.getyPos());
+
+            returnThis += coordinates.get(i).toString() + "\n";
+
+        }
+
+        return ok(returnThis);
+    }
+
+    private void addToString(String s) {
+        returnData += s;
+    }
+
+    public class LocationCoordinate {
+        private int id;
+        private double xPos;
+
+        public int getId() {
+            return id;
+        }
+
+        public double getxPos() {
+            return xPos;
+        }
+
+        public double getyPos() {
+            return yPos;
+        }
+
+        private double yPos;
+
+        LocationCoordinate(int id, double xPos, double yPos) {
+            this.id = id;
+            this.xPos = xPos;
+            this.yPos = yPos;
+        }
+
+        public String toString() {
+            return "id: " + id + ", X: " + xPos + ", Y: " + yPos;
+        }
+
+    }
+
+    private void executeUpdate(int id, double x, double y) {
+
+        SQLTools.StatementFiller sf = pstmt -> {
+            pstmt.setDouble(1, x);
+            pstmt.setDouble(2, y);
+            pstmt.setInt(3, id);
+        };
+
+        SQLTools.ResultSetProcessor rp = rs -> {
+        };
+
+        try {
+            SQLTools.doPreparedStatement(db,
+                    "UPDATE Locations SET lat = ?, lng = ? WHERE location_id = ?",
+                    sf, rp);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
 
