@@ -369,7 +369,7 @@ public class EventController extends Controller {
 		final JsonNode[] result = {null};
 
 		String sql = "SELECT CONCAT(Users.first_name, ' ', Users.last_name) AS name, message, " +
-				"date_format(date_time, '%Y-%m-%d-%H.%i') AS date_time, Users.user_id FROM Chats, Users " +
+				"date_format(date_time, 'Skickat %e/%c kl %H.%i') AS date_time, Users.user_id FROM Chats, Users " +
 				"WHERE Chats.event_id = ? AND Chats.user_id = Users.user_id ORDER BY Chats.date_time";
 
 		SQLTools.StatementFiller sf = stmt -> {
