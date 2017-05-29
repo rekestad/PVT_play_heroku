@@ -41,7 +41,8 @@ public class EventController extends Controller {
 
 		};
 
-		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
+		//String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
+		String sql2 = "INSERT INTO Event_attendees VALUES (NULL, ?, ?)";
 		SQLTools.StatementFiller sf2 = pstmt -> {
 			pstmt.setLong(1, jNode.findPath("user_id").asLong());
 			pstmt.setString(2, jNode.findPath("attending_children_ids").textValue());
