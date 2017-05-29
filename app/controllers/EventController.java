@@ -41,20 +41,16 @@ public class EventController extends Controller {
 
 		};
 
-		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
+		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?, ?)";
 
 		SQLTools.StatementFiller sf2 = pstmt -> {
 			pstmt.setLong(1, jNode.findPath("user_id").asLong());
-			pstmt.setString(2, jNode.findPath(",33,").textValue());
+			pstmt.setLong(2, jNode.findPath("user_id").asLong());
+			pstmt.setString(3, jNode.findPath("attending_children_ids").textValue());
 		};
 
 		try {
 			SQLTools.doPreparedStatement(db, sql, sf, nullRp);
-		} catch (SQLException e) {
-			return internalServerError("Error: " + e.toString());
-		}
-
-		try {
 			SQLTools.doPreparedStatement(db, sql2, sf2, nullRp);
 		} catch (SQLException e) {
 			return internalServerError("Error: " + e.toString());
