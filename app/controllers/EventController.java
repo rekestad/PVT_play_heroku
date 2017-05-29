@@ -38,18 +38,18 @@ public class EventController extends Controller {
 			pstmt.setString(4, jNode.findPath("start_time").textValue());
 			pstmt.setString(5, jNode.findPath("end_time").textValue());
 			pstmt.setString(6, jNode.findPath("description").textValue());
+
 		};
 
-		/*String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
-
+		String sql2 = "INSERT INTO Event_attendees VALUES ((SELECT MAX(event_id) FROM Events WHERE Events.user_id = ?), ?)";
 		SQLTools.StatementFiller sf2 = pstmt -> {
 			pstmt.setLong(1, jNode.findPath("user_id").asLong());
-			pstmt.setString(2, jNode.findPath("description").textValue());
-		};*/
+			pstmt.setString(2, jNode.findPath("attending_children_ids").textValue());
+		};
 
 		try {
 			SQLTools.doPreparedStatement(db, sql, sf, nullRp);
-			//SQLTools.doPreparedStatement(db, sql2, sf2, nullRp);
+			SQLTools.doPreparedStatement(db, sql2, sf2, nullRp);
 		} catch (SQLException e) {
 			return internalServerError("Error: " + e.toString());
 		}
@@ -150,6 +150,8 @@ public class EventController extends Controller {
 	public Result selectLastCreatedEvent() {
 		final JsonNode[] result = { null };
 		String sql = "SELECT MAX(event_id) FROM Events";
+
+
 
 		SQLTools.StatementFiller sf = stmt -> {
 			//stmt.setInt(1, eventId);
