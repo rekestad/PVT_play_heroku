@@ -55,7 +55,7 @@ public class UserController extends Controller {
 		try {
 			SQLTools.doPreparedStatement(db, "INSERT INTO Users (user_id, first_name, last_name) VALUES (?,?,?)",
 					sf, rp);
-			SQLTools.doPreparedStatement(db,"INSERT INTO Logs (user_id, type) VALUES (1)",sf2,rp);
+			SQLTools.doPreparedStatement(db,"INSERT INTO Logs (type) VALUES (1)",sf2,rp);
 		} catch (SQLException e) {
 			return internalServerError("couldn't make user: " + e);
 		}
@@ -72,10 +72,15 @@ public class UserController extends Controller {
 			pstmt.setLong(1, jNode.findPath("user_id").asLong());
 		};
 
+		SQLTools.StatementFiller sf2 = pstmt -> {
+			//pstmt.setLong(1, jNode.findPath("user_id").asLong());
+		};
+
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
 		try{
 			SQLTools.doPreparedStatement(db, "DELETE FROM Users WHERE user_id = ?", sf, rp);
+			SQLTools.doPreparedStatement(db, "INSERT INTO Logs (type) VALUES (11)", sf2, rp);
 		} catch(SQLException e){
 			return internalServerError("couldn't delete user" + e);
 		}
@@ -121,7 +126,7 @@ public class UserController extends Controller {
 
 		try{
 			SQLTools.doPreparedStatement(db, "INSERT INTO User_locations VALUES (?,?)", sf, rp);
-			SQLTools.doPreparedStatement(db,"INSERT INTO Logs (user_id, type) VALUES (2)", sf2, rp);
+			SQLTools.doPreparedStatement(db,"INSERT INTO Logs (type) VALUES (2)", sf2, rp);
 		} catch (SQLException e){
 			return internalServerError("couldn't load favorite location" + e);
 		}
@@ -146,7 +151,7 @@ public class UserController extends Controller {
 
 		try{
 			SQLTools.doPreparedStatement(db, "DELETE FROM User_locations WHERE user_id = ? AND location_id = ?", sf, rp);
-			SQLTools.doPreparedStatement(db, "INSERT INTO Logs (user_id, type) VALUES (3)", sf2, rp);
+			SQLTools.doPreparedStatement(db, "INSERT INTO Logs (type) VALUES (3)", sf2, rp);
 		} catch(SQLException e){
 			return internalServerError("couldn't delete like" + e);
 		}
@@ -171,7 +176,7 @@ public class UserController extends Controller {
 
 		try{
 			SQLTools.doPreparedStatement(db, "INSERT INTO User_likes VALUES (?,?)", sf, rp);
-			SQLTools.doPreparedStatement(db, "INSERT INTO Logs (user_id, type) VALUES (4)", sf2, rp);
+			SQLTools.doPreparedStatement(db, "INSERT INTO Logs (type) VALUES (4)", sf2, rp);
 		} catch (SQLException e){
 			return internalServerError("couldn't load like" + e);
 		}
@@ -196,7 +201,7 @@ public class UserController extends Controller {
 
 		try{
 			SQLTools.doPreparedStatement(db, "DELETE FROM User_likes WHERE liker_id = ? AND liked_id = ?", sf, rp);
-			SQLTools.doPreparedStatement(db, "INSERT INTO Logs (user_id, type) VALUES (5)", sf2, rp);
+			SQLTools.doPreparedStatement(db, "INSERT INTO Logs (type) VALUES (5)", sf2, rp);
 		} catch(SQLException e){
 			return internalServerError("couldn't delete like" + e);
 		}

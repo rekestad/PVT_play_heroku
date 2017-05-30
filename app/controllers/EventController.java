@@ -48,7 +48,7 @@ public class EventController extends Controller {
 			pstmt.setString(3, jNode.findPath("attending_children_ids").textValue());
 		};
 
-		String sql3 = "INSERT INTO Logs (user_id, type) VALUES (6)";
+		String sql3 = "INSERT INTO Logs (type) VALUES (6)";
 
 		SQLTools.StatementFiller sf3 = pstmt ->{
 			//pstmt.setLong(1, jNode.findPath("user_id").asLong());
@@ -120,7 +120,7 @@ public class EventController extends Controller {
 			pstmt.setLong(2, jNode.findPath("user_id").asLong());
 		};
 
-		String sql2 = "INSERT INTO Logs (user_id, type) VALUES (10)";
+		String sql2 = "INSERT INTO Logs (type) VALUES (10)";
 
 		SQLTools.StatementFiller sf2 = pstmt ->{
 			//pstmt.setLong(1, jNode.findPath("user_id").asLong());
@@ -247,7 +247,7 @@ public class EventController extends Controller {
 			pstmt.setString(3, jNode.findPath("attending_children_ids").textValue());
 		};
 
-		String sql2 = "INSERT INTO Logs (user_id, type) VALUES (7)";
+		String sql2 = "INSERT INTO Logs (type) VALUES (7)";
 
 		SQLTools.StatementFiller sf2 = pstmt ->{
 			//pstmt.setLong(1, jNode.findPath("user_id").asLong());
@@ -274,7 +274,7 @@ public class EventController extends Controller {
 			pstmt.setLong(2, jNode.findPath("user_id").asLong());
 		};
 
-		String sql2 = "INSERT INTO Logs (user_id, type) VALUES (8)";
+		String sql2 = "INSERT INTO Logs (type) VALUES (8)";
 
 		SQLTools.StatementFiller sf2 = pstmt ->{
 			//pstmt.setLong(1, jNode.findPath("user_id").asLong());
@@ -424,7 +424,7 @@ public class EventController extends Controller {
 			pstmt.setString(3, jNode.findPath("message").textValue());
 		};
 
-		String sql2 = "INSERT INTO Logs (user_id, type) VALUES (9)";
+		String sql2 = "INSERT INTO Logs (type) VALUES (9)";
 
 		SQLTools.StatementFiller sf2 = pstmt ->{
 			//pstmt.setLong(1, jNode.findPath("user_id").asLong());
