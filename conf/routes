@@ -37,6 +37,7 @@ POST    /user/deleteAccount             controllers.UserController.deleteAccount
 
 #GET	/importSthlmData				controllers.SthlmDataController.importAll
 #GET	/updateSthlmData				controllers.SthlmDataController.updateAll
+#GET	/getSthlmDesc				    controllers.SthlmDataController.getDescription()
 
 GET     /location/list-all              controllers.LocationController.listLocations
 GET     /location/getLocation           controllers.LocationController.getLocation(locationId:Integer)
