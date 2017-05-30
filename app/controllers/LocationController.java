@@ -187,10 +187,6 @@ public class LocationController extends Controller {
             stmt.setInt(2, locationId);
         };
 
-//        SQLTools.ResultSetProcessor rp = rs -> {
-//            while(rs.next())
-//                result[0] += rs.getLong("user_id");
-//        };
         SQLTools.ResultSetProcessor rp = rs -> {
             result[0] = SQLTools.columnsAndRowsToJSON(rs);
         };
