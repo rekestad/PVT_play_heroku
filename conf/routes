@@ -42,12 +42,12 @@ POST    /user/deleteAccount             controllers.UserController.deleteAccount
 GET     /location/list-all              controllers.LocationController.listLocations
 GET     /location/getLocation           controllers.LocationController.getLocation(locationId:Integer)
 GET     /location/nearYou               controllers.LocationController.getLocationsNearYou(lat:Double, lng:Double)
-GET     /location/convert                controllers.LocationController.convertCoordinate()
+#GET     /location/convert                controllers.LocationController.convertCoordinate()
 GET     /location/search                controllers.LocationController.searchLocations(search:String)
 
 GET     /location/userfavourite         controllers.LocationController.checkIfFavourite(userId:Long, locationId:Integer)
 GET     /location/userfavourite2        controllers.LocationController.checkIfFavourite2(userId:Long, locationId:Integer)
-GET     /location/userfavourite3        controllers.LocationController.checkIfFavourite2(userId:Long, locationId:Integer)
+GET     /location/userfavourite3        controllers.LocationController.checkIfFavourite3(userId:Long, locationId:Integer)
 
 GET		/event/select					controllers.EventController.selectEvent(eventId:Integer)
 GET		/event/select-all				controllers.EventController.selectAllEvents()
