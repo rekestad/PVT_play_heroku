@@ -175,6 +175,32 @@ public class LocationController extends Controller {
         return ok(result[0]);
     }
 
+    // CHECK IF LOCATION IS USER FAVOURITE 2
+    public Result checkIfFavourite3(long userId, int locationId) {
+        //final JsonNode[] result = {null};
+        final String[] result = {null};
+
+        String sql = "SELECT * FROM User_locations WHERE user_id = ? AND location_id = ?";
+
+        SQLTools.StatementFiller sf = stmt -> {
+            stmt.setLong(1, userId);
+            stmt.setInt(2, locationId);
+        };
+
+        SQLTools.ResultSetProcessor rp = rs -> {
+            while(rs.next())
+                result[0] += rs.getLong("user_id");
+        };
+
+        try {
+            SQLTools.doPreparedStatement(db, sql, sf, rp);
+        } catch (SQLException e) {
+            return internalServerError("Error: " + e.toString());
+        }
+
+        return ok(result[0]);
+    }
+
     public Result convertCoordinate() {
         String sql = "SELECT * FROM Locations";
         ArrayList coordinates = new ArrayList<LocationCoordinate>();

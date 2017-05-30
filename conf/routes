@@ -47,6 +47,7 @@ GET     /location/search                controllers.LocationController.searchLoc
 
 GET     /location/userfavourite         controllers.LocationController.checkIfFavourite(userId:Long, locationId:Integer)
 GET     /location/userfavourite2        controllers.LocationController.checkIfFavourite2(userId:Long, locationId:Integer)
+GET     /location/userfavourite3        controllers.LocationController.checkIfFavourite2(userId:Long, locationId:Integer)
 
 GET		/event/select					controllers.EventController.selectEvent(eventId:Integer)
 GET		/event/select-all				controllers.EventController.selectAllEvents()
