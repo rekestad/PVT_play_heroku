@@ -94,7 +94,6 @@ public class LocationController extends Controller {
     // LOCATIONS NEAR YOU
     public Result getLocationsNearYou(double lat, double lng) {
         final JsonNode[] result = {null};
-        //search += "%";
         final double latitude = lat;
         final double longitude = lng;
 
