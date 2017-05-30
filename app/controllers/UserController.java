@@ -345,7 +345,7 @@ public class UserController extends Controller {
 		SQLTools.ResultSetProcessor rp = rs -> result[0] = SQLTools.columnsAndRowsToJSON(rs);
 
 		try{
-			SQLTools.doPreparedStatement(db, "SELECT l.location_id, l.name FROM Locations AS l, User_locations AS ul WHERE l.location_id = ul.location_id AND ul.user_id = ?", sf, rp);
+			SQLTools.doPreparedStatement(db, "SELECT l.location_id, l.name, l.location_type FROM Locations AS l, User_locations AS ul WHERE l.location_id = ul.location_id AND ul.user_id = ?", sf, rp);
 		} catch (SQLException e){
 			return internalServerError("coudn't load users locations");
 		}
