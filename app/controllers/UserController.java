@@ -46,9 +46,7 @@ public class UserController extends Controller {
 			pstmt.setString(3, jNode.findPath("last_name").textValue());
 		};
 
-		SQLTools.StatementFiller sf2 = pstmt ->{
-			//pstmt.setLong(1, jNode.findPath("user_id").asLong());
-		};
+		SQLTools.StatementFiller sf2 = pstmt ->{};
 
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
@@ -72,9 +70,7 @@ public class UserController extends Controller {
 			pstmt.setLong(1, jNode.findPath("user_id").asLong());
 		};
 
-		SQLTools.StatementFiller sf2 = pstmt -> {
-			//pstmt.setLong(1, jNode.findPath("user_id").asLong());
-		};
+		SQLTools.StatementFiller sf2 = pstmt -> {};
 
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
@@ -118,9 +114,7 @@ public class UserController extends Controller {
 			pstmt.setInt(2, jNode.findPath("location_id").asInt());
 		};
 
-		SQLTools.StatementFiller sf2 = pstmt -> {
-			//pstmt.setLong(1, jNode.findPath("user_id").asLong());
-		};
+		SQLTools.StatementFiller sf2 = pstmt -> {};
 
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
@@ -143,9 +137,7 @@ public class UserController extends Controller {
 			pstmt.setLong(2, jNode.findPath("location_id").asLong());
 		};
 
-		SQLTools.StatementFiller sf2 = pstmt -> {
-			//pstmt.setLong(1, jNode.findPath("user_id").asLong());
-		};
+		SQLTools.StatementFiller sf2 = pstmt -> {};
 
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
@@ -168,9 +160,7 @@ public class UserController extends Controller {
 			pstmt.setLong(2, jNode.findPath("liked_id").asLong());
 		};
 
-		SQLTools.StatementFiller sf2 = pstmt -> {
-			//pstmt.setLong(1, jNode.findPath("liker_id").asLong());
-		};
+		SQLTools.StatementFiller sf2 = pstmt -> {};
 
 		SQLTools.ResultSetProcessor rp = rs -> {};
 
@@ -193,9 +183,7 @@ public class UserController extends Controller {
 			pstmt.setLong(2, jNode.findPath("liked_id").asLong());
 		};
 
-		SQLTools.StatementFiller sf2 = pstmt -> {
-			//pstmt.setLong(1, jNode.findPath("liker_id").asLong());
-		};
+		SQLTools.StatementFiller sf2 = pstmt -> {};
 
 		SQLTools.ResultSetProcessor rp = rs -> {};
 

@@ -3,18 +3,13 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.tools.CoordinateConverter;
 import controllers.tools.SQLTools;
-import org.w3c.dom.Element;
 import play.db.Database;
 import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.inject.Inject;
-import javax.xml.stream.Location;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public class LocationController extends Controller {
     private Database db;
@@ -178,7 +173,6 @@ public class LocationController extends Controller {
     // CHECK IF LOCATION IS USER FAVOURITE 2
     public Result checkIfFavourite3(long userId, int locationId) {
         final JsonNode[] result = {null};
-        //final String[] result = {null};
 
         String sql = "SELECT * FROM User_locations WHERE user_id = ? AND location_id = ?";
 
@@ -187,10 +181,6 @@ public class LocationController extends Controller {
             stmt.setInt(2, locationId);
         };
 
-//        SQLTools.ResultSetProcessor rp = rs -> {
-//            while(rs.next())
-//                result[0] += rs.getLong("user_id");
-//        };
         SQLTools.ResultSetProcessor rp = rs -> {
             result[0] = SQLTools.columnsAndRowsToJSON(rs);
         };
