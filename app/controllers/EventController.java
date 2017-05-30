@@ -470,15 +470,13 @@ public class EventController extends Controller {
 
     // method to select everything for the eventActivity-page
     public Result getEverythingForEventActivity(long userId, int eventId) {
+
         String userSql = "SELECT first_name, last_name FROM Users WHERE user_id = " + userId;
         String userChildrenSql = "SELECT child_id, age FROM `User_children` WHERE parent_id = " + userId + " ORDER BY age";
-        String eventSql = "SELECT * FROM Events WHERE event_id = "+ eventId;
-        String userAttendedSql = "SELECT * FROM Event_attendees WHERE event_id = "+ eventId + " AND user_id = " + userId;
-        String eventAttendeesSql = "SELECT u.user_id, u.first_name, u.last_name FROM Event_attendees e, Users u WHERE e.user_id = u.user_id AND e.event_id = " + eventId;
+        String eventSql = "SELECT e.*, l.name_short FROM Events e, Locations l WHERE e.location_id = l.location_id AND e.event_id = "+ eventId;
+        String eventAttendeesSql = "SELECT u.user_id, u.first_name, u.last_name, (SELECT GROUP_CONCAT(uc.age ORDER BY uc.age SEPARATOR ',') FROM User_children uc WHERE e.attending_children_ids LIKE CONCAT('%,', CONCAT(uc.child_id, ',%')) GROUP BY e.event_id) AS children FROM Event_attendees e, Users u WHERE e.user_id = u.user_id AND e.event_id = " + eventId;
 
         final JsonNode[] result = {null, null, null, null, null};
-
-        //String sql = "SELECT l.location_id, l.name_short, l.name, lt.type_name, e.*, (SELECT COUNT(ea.user_id) FROM Event_attendees ea WHERE ea.event_id = e.event_id) AS noOfAttendees, (SELECT GROUP_CONCAT(DISTINCT uc.age ORDER BY uc.age SEPARATOR ', ') FROM User_children uc, Event_attendees ea2 WHERE ea2.event_id = e.event_id AND ea2.attending_children_ids LIKE CONCAT('%', CONCAT(uc.child_id, ',%')) GROUP BY e.event_id) AS children FROM Locations l, Events e, Location_types lt WHERE l.location_id = e.location_id AND l.location_type = lt.type_id AND CONCAT(e.date, ' ', e.end_time) > NOW() ORDER BY e.date, e.start_time LIMIT 100";
 
         SQLTools.StatementFiller sf = stmt -> {
         };
@@ -486,38 +484,19 @@ public class EventController extends Controller {
         SQLTools.ResultSetProcessor rp2 = rs -> result[1] = SQLTools.columnsAndRowsToJSON(rs);
         SQLTools.ResultSetProcessor rp3 = rs -> result[2] = SQLTools.columnsAndRowsToJSON(rs);
         SQLTools.ResultSetProcessor rp4 = rs -> result[3] = SQLTools.columnsAndRowsToJSON(rs);
-        SQLTools.ResultSetProcessor rp5 = rs -> result[4] = SQLTools.columnsAndRowsToJSON(rs);
 
         try {
             SQLTools.doPreparedStatement(db, userSql, sf, rp);
             SQLTools.doPreparedStatement(db, userChildrenSql, sf, rp2);
             SQLTools.doPreparedStatement(db, eventSql, sf, rp3);
-            SQLTools.doPreparedStatement(db, userAttendedSql, sf, rp4);
-            SQLTools.doPreparedStatement(db, eventAttendeesSql, sf, rp5);
+            SQLTools.doPreparedStatement(db, eventAttendeesSql, sf, rp4);
         } catch (SQLException e) {
             return internalServerError("Error: " + e.toString());
         }
 
-        JSONArray arr = new JSONArray();
-        JSONObject userArr = new JSONObject();
-        JSONObject userChildrenArr = new JSONObject();
-        JSONObject eventArr = new JSONObject();
-        JSONObject userAttendedArr = new JSONObject();
-        JSONObject eventAttendeesArr = new JSONObject();
+        String returnString = result[0].toString() + "," + result[1].toString() + "," + result[2].toString() + "," + result[3].toString();
 
-        userArr.put("user", result[0]);
-        userChildrenArr.put("userChildren", result[1]);
-        eventArr.put("event", result[2]);
-        userAttendedArr.put("userIsAttending", result[3]);
-        eventAttendeesArr.put("eventAttendees", result[4]);
-
-        arr.put(userArr);
-        arr.put(userChildrenArr);
-        arr.put(eventArr);
-        arr.put(userAttendedArr);
-        arr.put(eventAttendeesArr);
-
-        return ok(arr.toString());
+        return ok(returnString);
     }
 
     private String trimArray(String s) {
